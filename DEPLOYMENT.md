@@ -6,25 +6,36 @@
 
 **Primary Deployment - Hugging Face Spaces:**
 - URL: https://rreichert-starguardai.hf.space
-- Status: Always-On
+- Status: ✅ Live (Always-On)
 - Platform: Hugging Face Spaces
 - Deployment: Automatic from git push
 
 **Backup Deployment - Render.com:**
 - URL: https://starguard-mobile.onrender.com
-- Status: Free tier (sleeps after 15 min)
+- Status: ✅ Live (Free tier - sleeps after 15 min)
 - Platform: Render.com
 - Deployment: Automatic from GitHub
 
 **Source Code:**
 - GitHub: https://github.com/reichert-science-intelligence/starguard-mobile
-- Organization: https://github.com/StarGuardAi/starguard-mobile (mirror)
 
 ---
 
-## 📱 Mobile App Features
+### Desktop Version (starguard-desktop)
 
-**10 Pages:**
+**Primary Deployment - Hugging Face Spaces:**
+- URL: https://rreichert-starguardai-desktop.hf.space
+- Status: ✅ Live (Always-On)
+- Platform: Hugging Face Spaces
+- Deployment: Automatic from git push
+
+**Source Code:**
+- GitHub: https://github.com/reichert-science-intelligence/starguard-desktop
+
+---
+
+## 📱 Mobile App (10 Pages)
+
 1. Executive Dashboard - Strategic KPIs
 2. Star Rating Predictor - CMS Quality
 3. HEDIS Gap Analyzer - Quality Measures
@@ -37,91 +48,82 @@
 10. Model Monitor - ML Performance
 
 **Tech Stack:**
-- Python 3.11
-- Shiny for Python 0.10.2
-- Docker deployment
+- Python 3.11, Shiny for Python 0.10.2
 - Mobile-first responsive design
 - Purple theme with dark mode
 
 ---
 
+## 💻 Desktop App (Wide-Screen Dashboards)
+
+Full-featured analytics platform optimized for desktop/laptop use:
+- Wide-screen layouts
+- Advanced visualizations
+- Multi-panel dashboards
+- Detailed reporting
+
+**Tech Stack:**
+- Python 3.11, Shiny for Python 0.10.2
+- Desktop-optimized layouts
+
+---
+
 ## 🔄 Deployment Commands
 
-### Push to Hugging Face:
+### Mobile - Push to Hugging Face:
 ```bash
 cd C:\Users\reich\Projects\starguard-mobile-standalone
 git push hf main
 ```
 
-### Push to GitHub (auto-deploys to Render):
+### Mobile - Push to GitHub (auto-deploys to Render):
 ```bash
 git push personal main
-# or
+```
+
+### Desktop - Push to Hugging Face:
+```bash
+cd C:\Users\reich\Projects\starguard-desktop-standalone
+git push hf main
+```
+
+### Desktop - Push to GitHub:
+```bash
 git push origin main
 ```
 
-### Update all remotes:
-```bash
-git push --all
-```
-
 ---
 
-## 📊 Portfolio Links
+## 📊 Portfolio Quick Links
 
-**Live Demos:**
-- Mobile (Primary): https://rreichert-starguardai.hf.space
-- Mobile (Backup): https://starguard-mobile.onrender.com
-
-**Source Code:**
-- Mobile: https://github.com/reichert-science-intelligence/starguard-mobile
-
-**LinkedIn:**
-- Profile: https://linkedin.com/in/robertreichert-healthcareai
-
-**Contact:**
-- Email: reichert.starguardai@gmail.com
-- Landing Page: tinyurl.com/bdevpdz5
-
----
-
-## 📝 Quick Copy/Paste
-
-**For Cursor AI:**
+**For Resume/LinkedIn:**
 ```
 Mobile Demo: https://rreichert-starguardai.hf.space
-GitHub: https://github.com/reichert-science-intelligence/starguard-mobile
+Desktop Demo: https://rreichert-starguardai-desktop.hf.space
+GitHub: https://github.com/reichert-science-intelligence
 ```
 
-**For LinkedIn:**
+**For Recruiters:**
 ```
-🚀 Live Demo: https://rreichert-starguardai.hf.space
-```
+🚀 Try Live Demos:
+Mobile: https://rreichert-starguardai.hf.space
+Desktop: https://rreichert-starguardai-desktop.hf.space
 
-**For Resume:**
-```
-StarGuard AI - Medicare Advantage Intelligence Platform
-Live: https://rreichert-starguardai.hf.space
-Code: https://github.com/reichert-science-intelligence/starguard-mobile
+📁 View Source Code:
+Mobile: https://github.com/reichert-science-intelligence/starguard-mobile
+Desktop: https://github.com/reichert-science-intelligence/starguard-desktop
 ```
 
 ---
 
 ## 🎯 Deployment Status
 
-- [x] Mobile version deployed to Hugging Face
-- [x] Mobile version deployed to Render
-- [x] Desktop version prepared (starguard-desktop-standalone) - create GitHub/HF repos then push
+- [x] Mobile version deployed to Hugging Face ✅
+- [x] Mobile version deployed to Render ✅
+- [x] Desktop version deployed to Hugging Face ✅
+- [x] All code on GitHub ✅
+- [ ] LinkedIn announcement (next)
+- [ ] Resume update (next)
 
-Last Updated: February 15, 2026
-
----
-
-## 🖥️ Desktop Version (starguard-desktop)
-
-**Standalone repo:** `C:\Users\reich\Projects\starguard-desktop-standalone`
-
-**To deploy:**
-1. Create GitHub repo: https://github.com/new → `reichert-science-intelligence/starguard-desktop`
-2. Create HF Space: https://huggingface.co/new-space → `rreichert/StarGuardAI-Desktop` (SDK: Streamlit)
-3. Push: `git push -u origin main` then `git push hf main`
+**Last Updated:** February 15, 2026
+**Status:** ✅ ALL SYSTEMS LIVE
