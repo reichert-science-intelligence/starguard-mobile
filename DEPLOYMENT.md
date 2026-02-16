@@ -111,6 +111,17 @@ Code: https://github.com/reichert-science-intelligence/starguard-mobile
 
 - [x] Mobile version deployed to Hugging Face
 - [x] Mobile version deployed to Render
-- [ ] Desktop version deployment (next)
+- [x] Desktop version prepared (starguard-desktop-standalone) - create GitHub/HF repos then push
 
 Last Updated: February 15, 2026
+
+---
+
+## 🖥️ Desktop Version (starguard-desktop)
+
+**Standalone repo:** `C:\Users\reich\Projects\starguard-desktop-standalone`
+
+**To deploy:**
+1. Create GitHub repo: https://github.com/new → `reichert-science-intelligence/starguard-desktop`
+2. Create HF Space: https://huggingface.co/new-space → `rreichert/StarGuardAI-Desktop` (SDK: Streamlit)
+3. Push: `git push -u origin main` then `git push hf main`
