@@ -3,6 +3,7 @@ StarGuard AI Mobile - Medicare Advantage Intelligence Platform
 Main application entry point with hamburger menu sidebar navigation
 """
 
+from pathlib import Path
 from shiny import App, ui, render
 from .utils.theme_config import get_theme, get_mobile_css, get_mobile_meta
 from .pages.star_predictor import star_predictor_ui, star_predictor_server
@@ -125,6 +126,18 @@ def navigation_bar():
                     id="nav-monitor",
                     onclick="navigateTo('monitor')"
                 ),
+                ui.div(
+                    "ℹ️ About",
+                    class_="sidebar-nav-item",
+                    id="nav-about",
+                    onclick="navigateTo('about')"
+                ),
+                ui.div(
+                    "📋 Services & Pricing",
+                    class_="sidebar-nav-item",
+                    id="nav-services",
+                    onclick="navigateTo('services')"
+                ),
                 class_="sidebar-nav"
             ),
             ui.div(
@@ -155,7 +168,9 @@ def navigation_bar():
                     "providers": "👨‍⚕️ Providers",
                     "profile": "👤 Member 360°",
                     "ai": "🤖 AI Validation",
-                    "monitor": "🤖 ML Monitor"
+                    "monitor": "🤖 ML Monitor",
+                    "about": "ℹ️ About",
+                    "services": "📋 Services"
                 },
                 selected="dashboard",
                 inline=True
@@ -265,7 +280,32 @@ def server(input, output, session):
             return ui.div(model_monitor_ui(), id="monitor-page")
         elif page == "profile":
             return ui.div(member_profile_ui(), id="profile-page")
+        elif page == "about":
+            return ui.div(
+                ui.tags.iframe(
+                    src="/starguard_about.html",
+                    width="100%",
+                    height="800px",
+                    style="border: none; min-height: 600px;",
+                    title="About StarGuard AI",
+                ),
+                style="width: 100%;",
+                id="about-page"
+            )
+        elif page == "services":
+            return ui.div(
+                ui.tags.iframe(
+                    src="/starguard_services.html",
+                    width="100%",
+                    height="800px",
+                    style="border: none; min-height: 600px;",
+                    title="Services & Market Insights",
+                ),
+                style="width: 100%;",
+                id="services-page"
+            )
         return ui.div(executive_dashboard_ui(), id="dashboard-page")
 
 
-app = App(app_ui, server)
+app_dir = Path(__file__).resolve().parent
+app = App(app_ui, server, static_assets=app_dir / "www")
