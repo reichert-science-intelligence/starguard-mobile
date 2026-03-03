@@ -2,7 +2,7 @@ FROM python:3.11
 
 WORKDIR /app
 
-COPY Artifacts/app/requirements.txt requirements.txt
+COPY Artifacts/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
