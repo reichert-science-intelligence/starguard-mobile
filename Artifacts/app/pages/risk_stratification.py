@@ -1,7 +1,7 @@
 """Member Risk Stratification Dashboard - Mobile optimized."""
 
 from shiny import ui, render
-from ..components.mobile_layout import (
+from components.mobile_layout import (
     mobile_page,
     mobile_card,
     mobile_button,

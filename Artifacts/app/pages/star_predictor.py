@@ -2,7 +2,7 @@
 
 from shiny import ui, render, reactive
 import random
-from ..components.mobile_layout import (
+from components.mobile_layout import (
     mobile_page,
     mobile_card,
     mobile_input_group,

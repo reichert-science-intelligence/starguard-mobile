@@ -1,7 +1,7 @@
 """Provider Performance Scorecard - Mobile optimized."""
 
 from shiny import ui, render, reactive
-from ..components.mobile_layout import (
+from components.mobile_layout import (
     mobile_page,
     mobile_card,
     mobile_input_group,
