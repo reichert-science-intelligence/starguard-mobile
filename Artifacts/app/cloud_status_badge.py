@@ -205,6 +205,74 @@ def cloud_status_badge(app_variant: str = "starguard", layout: str = "sidebar") 
     )
 
 
+def auditshield_badge(mode: str = "strip") -> ui.div:
+    """4-badge infrastructure strip: GCP, Sheets, Supabase, Claude API."""
+    return _infra_badge_strip(
+        strip_items=[
+            ("dot-green",  "GCP"),
+            ("dot-green",  "Sheets"),
+            ("dot-green",  "Supabase"),
+            ("dot-green",  "Claude API"),
+        ],
+        hf_url="https://tinyurl.com/2vj79bem",
+        mode=mode,
+    )
+
+
+def starguard_desktop_badge(mode: str = "strip") -> ui.div:
+    """4-badge infrastructure strip: GCP, Sheets, Supabase, Claude API."""
+    return _infra_badge_strip(
+        strip_items=[
+            ("dot-green",  "GCP"),
+            ("dot-green",  "Sheets"),
+            ("dot-green",  "Supabase"),
+            ("dot-green",  "Claude API"),
+        ],
+        hf_url="https://rreichert-starguard-desktop.hf.space",
+        mode=mode,
+    )
+
+
+def starguard_mobile_badge(mode: str = "strip") -> ui.div:
+    """4-badge infrastructure strip: GCP, Sheets, Supabase, Claude API."""
+    return _infra_badge_strip(
+        strip_items=[
+            ("dot-green",  "GCP"),
+            ("dot-green",  "Sheets"),
+            ("dot-green",  "Supabase"),
+            ("dot-green",  "Claude API"),
+        ],
+        hf_url="https://rreichert-starguardai.hf.space",
+        mode=mode,
+    )
+
+
+def _infra_badge_strip(
+    strip_items: list, hf_url: str, mode: str = "strip"
+) -> ui.div:
+    """Render 4-badge infrastructure strip."""
+    EST = timezone(timedelta(hours=-5))
+    now = datetime.now(EST).strftime("%I:%M:%S %p EST")
+    parts = [ui.span("☁ Cloud Services", class_="cloud-badge-strip-title")]
+    for i, (dot_class, label) in enumerate(strip_items):
+        if i > 0:
+            parts.append(ui.span("·", class_="cloud-badge-strip-sep"))
+        parts.append(ui.span(
+            ui.span(class_=dot_class),
+            ui.span(label),
+            class_="cloud-badge-strip-item"
+        ))
+    return ui.div(
+        ui.div(*parts, class_="cloud-badge-strip-left"),
+        ui.div(
+            ui.span("Last sync: ", ui.span(now, class_="sync-time")),
+            ui.tags.a("🔗 Live Demo", href=hf_url, target="_blank"),
+            class_="cloud-badge-strip-right"
+        ),
+        class_="cloud-badge-panel cloud-badge-strip"
+    )
+
+
 def provenance_footer(app_variant: str = "starguard") -> ui.div:
     """
     Sticky bottom footer — shows on every page.

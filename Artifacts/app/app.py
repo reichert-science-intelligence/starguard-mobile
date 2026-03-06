@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 from shiny import App, ui, render, reactive
 from utils.theme_config import get_theme, get_mobile_css, get_mobile_meta
-from cloud_status_badge import cloud_status_css, cloud_status_badge, provenance_footer
+from cloud_status_badge import cloud_status_css, starguard_mobile_badge, provenance_footer
 from hedis_gap_trail import HedisGapDB, push_hedis_gap, fetch_hedis_gaps, fetch_gap_summary, close_hedis_gap
 from hedis_gap_ui import hedis_gap_panel
 from star_rating_cache import (
@@ -306,7 +306,7 @@ app_ui = ui.page_fluid(
         """)
     ),
     navigation_bar(),
-    cloud_status_badge(app_variant="starguard", layout="strip"),
+    starguard_mobile_badge(mode="strip"),
     ui.output_ui("page_content"),
     footer(),
     provenance_footer(app_variant="starguard"),
