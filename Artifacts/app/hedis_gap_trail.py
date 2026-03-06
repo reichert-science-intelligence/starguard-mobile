@@ -188,7 +188,7 @@ def _push_gap_to_supabase(row: list) -> None:
     """Parallel write to Supabase if configured. Silent on failure."""
     if not _SUPABASE_AVAILABLE:
         return
-    url, key = os.environ.get("SUPABASE_URL"), os.environ.get("SUPABASE_KEY")
+    url, key = os.environ.get("SUPABASE_URL"), os.environ.get("SUPABASE_ANON_KEY")
     if not url or not key:
         return
     try:
