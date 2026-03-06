@@ -1,13 +1,13 @@
 # cloud_status_badge.py
 # ─────────────────────────────────────────────────────────────
-# Drop-in Cloud Status Badge for AuditShield-Live & StarGuard
-# Author: Robert Reichert | reichert-science-intelligence
+# Drop-in Cloud Status Badge — 4-badge layout (Phase 1)
+# AuditShield-Live & StarGuard | reichert-science-intelligence
 # Brand: Purple #4A3E8F | Gold #D4AF37 | Green #10b981
 # Layout: layout="strip" = compact horizontal bar | default = stacked sidebar
 # ─────────────────────────────────────────────────────────────
 
 from shiny import ui
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import os
 
 # ── Config: set per-app in app.py via environment or direct ──
@@ -130,7 +130,8 @@ def cloud_status_badge(app_variant: str = "starguard", layout: str = "sidebar") 
     app_variant: 'auditshield' | 'starguard'
     layout: 'sidebar' (default, stacked rows) | 'strip' (compact horizontal bar)
     """
-    now = datetime.now().strftime("%H:%M:%S EST")
+    EST = timezone(timedelta(hours=-5))
+    now = datetime.now(EST).strftime("%I:%M:%S %p EST")
 
     if app_variant == "auditshield":
         services = [
@@ -138,14 +139,12 @@ def cloud_status_badge(app_variant: str = "starguard", layout: str = "sidebar") 
             ("dot-green",  "Agentic RAG Pipeline — Live"),
             ("dot-gold",   "M.E.A.T. Validator — Ready"),
             ("dot-purple", "HuggingFace Spaces — Deployed"),
-            ("dot-green",  "RADV Audit Engine — Online"),
         ]
         strip_items = [
             ("dot-green",  "Claude API"),
             ("dot-green",  "Agentic RAG"),
             ("dot-gold",   "M.E.A.T."),
             ("dot-purple", "HuggingFace"),
-            ("dot-green",  "RADV Engine"),
         ]
         hf_url = "https://tinyurl.com/2vj79bem"
 
@@ -155,14 +154,12 @@ def cloud_status_badge(app_variant: str = "starguard", layout: str = "sidebar") 
             ("dot-green",  "HEDIS Analytics Engine — Live"),
             ("dot-gold",   "HCC Risk Model — Ready"),
             ("dot-purple", "HuggingFace Spaces — Deployed"),
-            ("dot-green",  "Star Rating Forecaster — Online"),
         ]
         strip_items = [
             ("dot-green",  "Claude API"),
             ("dot-green",  "HEDIS Analytics"),
             ("dot-gold",   "HCC Risk"),
             ("dot-purple", "HuggingFace"),
-            ("dot-green",  "Star Forecaster"),
         ]
         hf_url = "https://rreichert-starguard-desktop.hf.space"
 
