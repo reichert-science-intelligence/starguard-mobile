@@ -12,4 +12,6 @@ COPY . .
 
 EXPOSE 8000
 
+ENV PYTHONPATH=/app/Artifacts/app
+
 CMD ["shiny", "run", "Artifacts.app.app:app", "--host", "0.0.0.0", "--port", "8000"]
