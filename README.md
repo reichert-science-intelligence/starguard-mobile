@@ -8,6 +8,8 @@ app_port: 8000
 pinned: false
 ---
 
+[![CI](https://github.com/reichert-science-intelligence/starguard-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/reichert-science-intelligence/starguard-mobile/actions/workflows/ci.yml)
+
 # 📱 StarGuard Mobile
 ### Medicare Advantage Intelligence Platform — Mobile Edition
 **Robert Reichert | Healthcare Data Scientist & AI Architect**
