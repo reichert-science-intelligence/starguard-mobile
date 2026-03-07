@@ -109,7 +109,7 @@ def navigation_bar():
                     onclick="navigateTo('hedisgaps')"
                 ),
                 ui.div(
-                    "Admin View",
+                    "[Admin] Admin View",
                     class_="sidebar-nav-item",
                     id="nav-adminview",
                     onclick="navigateTo('adminview')"
@@ -224,7 +224,7 @@ def navigation_bar():
 
             function navigateTo(page) {
                 if (typeof Shiny !== 'undefined') {
-                    Shiny.setInputValue('page_nav', page);
+                    Shiny.setInputValue('page_nav', page, {priority: 'event'});
                 }
                 document.querySelectorAll('.sidebar-nav-item').forEach(item => {
                     item.classList.remove('active');
