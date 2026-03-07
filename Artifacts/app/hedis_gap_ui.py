@@ -4,6 +4,7 @@
 # ─────────────────────────────────────────────────────────────
 
 from shiny import ui
+
 from hedis_gap_trail import HEDIS_MEASURES
 
 
@@ -79,106 +80,102 @@ def hedis_gap_panel() -> ui.div:
     """
     measure_choices = {
         "": "— Select Measure —",
-        **{code: f"{code} — {name}" for code, (name, _) in HEDIS_MEASURES.items()}
+        **{code: f"{code} — {name}" for code, (name, _) in HEDIS_MEASURES.items()},
     }
 
     return ui.div(
         hedis_gap_css(),
-
         # ── Header ──
         ui.div("📊 HEDIS Gap Refresh", class_="hedis-panel-title"),
         ui.div(
             ui.output_text("hedis_sync_status"),
             ui.input_action_button(
-                "btn_refresh_gaps", "↻ Refresh Cloud",
-                class_="btn btn-sm btn-outline-secondary"
+                "btn_refresh_gaps", "↻ Refresh Cloud", class_="btn btn-sm btn-outline-secondary"
             ),
-            class_="hedis-sync-row"
+            class_="hedis-sync-row",
         ),
-
         # ── KPI Summary Row ──
         ui.output_ui("hedis_kpi_cards"),
-
         # ── Push New Gap ──
         ui.card(
             ui.card_header("Push Gap to Cloud"),
             ui.layout_columns(
-                ui.input_text("gap_member_id", "Member ID",
-                              placeholder="e.g. MBR-00142"),
-                ui.input_text("gap_member_name", "Member Name",
-                              placeholder="e.g. John Smith"),
-                col_widths=[6, 6]
+                ui.input_text("gap_member_id", "Member ID", placeholder="e.g. MBR-00142"),
+                ui.input_text("gap_member_name", "Member Name", placeholder="e.g. John Smith"),
+                col_widths=[6, 6],
             ),
             ui.layout_columns(
-                ui.input_select("gap_measure_code", "HEDIS Measure",
-                                choices=measure_choices),
-                ui.input_select("gap_status", "Gap Status",
-                                choices=["OPEN", "CLOSED", "EXCLUDED"]),
-                col_widths=[6, 6]
+                ui.input_select("gap_measure_code", "HEDIS Measure", choices=measure_choices),
+                ui.input_select("gap_status", "Gap Status", choices=["OPEN", "CLOSED", "EXCLUDED"]),
+                col_widths=[6, 6],
             ),
             ui.layout_columns(
-                ui.input_text("gap_due_date", "Due Date",
-                              placeholder="e.g. 2026-12-31"),
-                ui.input_text("gap_provider", "Provider Name",
-                              placeholder="e.g. Dr. Martinez"),
-                col_widths=[6, 6]
+                ui.input_text("gap_due_date", "Due Date", placeholder="e.g. 2026-12-31"),
+                ui.input_text("gap_provider", "Provider Name", placeholder="e.g. Dr. Martinez"),
+                col_widths=[6, 6],
             ),
             ui.layout_columns(
-                ui.input_select("gap_intervention", "Intervention Type",
-                                choices=["Outreach", "Clinical", "Administrative"]),
-                ui.input_numeric("gap_star_impact", "Star Impact (1–5)",
-                                 value=3, min=1, max=5),
-                ui.input_numeric("gap_roi", "ROI Estimate ($)",
-                                 value=0, min=0, step=100),
-                col_widths=[4, 4, 4]
+                ui.input_select(
+                    "gap_intervention",
+                    "Intervention Type",
+                    choices=["Outreach", "Clinical", "Administrative"],
+                ),
+                ui.input_numeric("gap_star_impact", "Star Impact (1–5)", value=3, min=1, max=5),
+                ui.input_numeric("gap_roi", "ROI Estimate ($)", value=0, min=0, step=100),
+                col_widths=[4, 4, 4],
             ),
             ui.div(
                 ui.input_action_button(
                     "btn_generate_gap_rec",
                     "🤖 Generate Recommendation",
                     class_="btn btn-outline-primary btn-sm mb-2",
-                    style="background:#4A3E8F; color:#fff; border-color:#D4AF37;"
+                    style="background:#4A3E8F; color:#fff; border-color:#D4AF37;",
                 ),
-                class_="gap-generate-row"
+                class_="gap-generate-row",
             ),
             ui.input_text_area(
-                "gap_claude_rec", "Claude AI Recommendation",
+                "gap_claude_rec",
+                "Claude AI Recommendation",
                 placeholder="Fill gap details above, click 🤖 Generate — or paste manually.",
-                rows=3
+                rows=3,
             ),
             ui.input_action_button(
-                "btn_push_gap", "☁ Push Gap to Cloud",
+                "btn_push_gap",
+                "☁ Push Gap to Cloud",
                 class_="btn btn-primary w-100",
-                style="background:#4A3E8F; border-color:#4A3E8F;"
+                style="background:#4A3E8F; border-color:#4A3E8F;",
             ),
             ui.output_ui("gap_push_result"),
         ),
-
         # ── Filter + Table ──
         ui.card(
             ui.card_header("Live Gap Panel"),
             ui.layout_columns(
-                ui.input_select("gap_filter_status", "Filter: Status",
-                                choices=["ALL", "OPEN", "CLOSED", "EXCLUDED"]),
-                ui.input_select("gap_filter_measure", "Filter: Measure",
-                                choices=["ALL"] + list(HEDIS_MEASURES.keys())),
-                col_widths=[6, 6]
+                ui.input_select(
+                    "gap_filter_status",
+                    "Filter: Status",
+                    choices=["ALL", "OPEN", "CLOSED", "EXCLUDED"],
+                ),
+                ui.input_select(
+                    "gap_filter_measure",
+                    "Filter: Measure",
+                    choices=["ALL"] + list(HEDIS_MEASURES.keys()),
+                ),
+                col_widths=[6, 6],
             ),
             ui.output_data_frame("hedis_gap_table"),
         ),
-
         # ── Close Gap ──
         ui.card(
             ui.card_header("Close a Gap"),
             ui.layout_columns(
-                ui.input_text("gap_id_close", "Gap ID",
-                              placeholder="e.g. GAP-20260304-104512"),
-                ui.input_action_button("btn_close_gap", "Mark Closed",
-                                       class_="btn btn-success btn-sm"),
-                col_widths=[8, 4]
+                ui.input_text("gap_id_close", "Gap ID", placeholder="e.g. GAP-20260304-104512"),
+                ui.input_action_button(
+                    "btn_close_gap", "Mark Closed", class_="btn btn-success btn-sm"
+                ),
+                col_widths=[8, 4],
             ),
             ui.output_ui("gap_close_result"),
         ),
-
-        class_="hedis-panel"
+        class_="hedis-panel",
     )

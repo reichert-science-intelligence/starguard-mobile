@@ -177,7 +177,7 @@ input:focus, select:focus, textarea:focus {
         max-width: 1200px;
         margin: 0 auto;
     }
-    
+
     .plotly {
         height: 400px;
     }
@@ -189,177 +189,177 @@ input:focus, select:focus, textarea:focus {
         background-color: #1a1a1a;
         color: #e0e0e0;
     }
-    
+
     .card {
         background-color: #2a2a2a;
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         color: #e0e0e0;
     }
-    
+
     .card-body {
         color: #e0e0e0;
     }
-    
+
     /* Fix all text in cards to be white in dark mode */
     .card h1, .card h2, .card h3, .card h4, .card h5, .card h6,
     .card p, .card span, .card div, .card li, .card td, .card th {
         color: #e0e0e0 !important;
     }
-    
+
     /* Keep specific colored elements */
     .card-header {
         color: white !important;
     }
-    
+
     input, select, textarea {
         background-color: #333;
         color: #e0e0e0;
         border-color: #444;
     }
-    
+
     .nav-tabs-container {
         background: #2a2a2a;
         border-bottom-color: #444;
     }
-    
+
     .shiny-input-radiogroup label span {
         background: #333;
         color: #e0e0e0;
     }
-    
+
     /* Metric boxes and info rows */
     .metric-box, [style*="background: #f8f9fa"] {
         background: #333 !important;
         color: #e0e0e0 !important;
     }
-    
+
     /* Strong tags in dark mode */
     strong {
         color: #e0e0e0;
     }
-    
+
     /* Text color fixes */
     .text-muted {
         color: #999 !important;
     }
-    
+
     /* Alert boxes in dark mode */
     .alert-box, [style*="border-left: 4px solid"] {
         background: #2a2a2a !important;
     }
-    
+
     /* Info rows and scenario details in dark mode */
     [style*="border-bottom: 1px solid #e0e0e0"] {
         border-bottom-color: #444 !important;
     }
-    
+
     [style*="background: #f5f3ff"] {
         background: #4c1d95 !important;
     }
-    
+
     /* Self-correction event text in dark mode */
     [style*="background: #fff8f0"] span {
         color: #e0e0e0 !important;
     }
-    
+
     /* ROI Scenario cards in dark mode */
     .scenario-card {
         background: #2a2a2a !important;
         border-color: #444 !important;
     }
-    
+
     .scenario-label {
         color: #b0b0b0 !important;
     }
-    
+
     .scenario-value {
         color: #e0e0e0 !important;
     }
-    
+
     .scenario-subtitle {
         color: #999 !important;
     }
-    
+
     .scenario-revenue {
         color: #4ade80 !important;
     }
-    
+
     .scenario-revenue-box {
         background: #1a3a2a !important;
     }
-    
+
     .scenario-highlight {
         background: #4c1d95 !important;
     }
-    
+
     .scenario-detail {
         border-bottom-color: #444 !important;
     }
-    
+
     /* Risk Stratification cards in dark mode */
     .risk-category-card, .segment-card {
         background: #2a2a2a !important;
         border-color: #444 !important;
     }
-    
+
     .risk-label, .hcc-label, .segment-label, .opp-label {
         color: #b0b0b0 !important;
     }
-    
+
     .risk-value, .hcc-value, .segment-value, .opp-value {
         color: #e0e0e0 !important;
     }
-    
+
     /* HCC category cards - bright text for dark backgrounds */
     .hcc-category-card {
         background: #2a2a2a !important;
         border-left-color: #8b5cf6 !important;
     }
-    
+
     .hcc-code {
         color: #f0f0f0 !important;
     }
-    
+
     .hcc-name {
         color: #d0d0d0 !important;
     }
-    
+
     .hcc-metric-label {
         color: #c0c0c0 !important;
     }
-    
+
     .hcc-metric-value {
         color: #e0e0e0 !important;
     }
-    
+
     .hcc-prevalence {
         color: #a78bfa !important;
     }
-    
+
     .hcc-category-card [style*="color: #7c3aed"] {
         color: #a78bfa !important;
     }
-    
+
     .hcc-category-card [style*="color: #28a745"] {
         color: #4ade80 !important;
     }
-    
+
     .hcc-category-card [style*="color: #1a1a1a"] {
         color: #e0e0e0 !important;
     }
-    
+
     /* Detailed HCC Analysis title - bright in dark mode */
     .hcc-detailed-title {
         color: #f0f0f0 !important;
         border-bottom-color: #8b5cf6 !important;
     }
-    
+
     /* Detailed HCC tiles STAY WHITE even in dark mode */
     .hcc-detailed-tile {
         background: white !important;
         border-color: #e0e0e0 !important;
     }
-    
+
     /* Force ALL text in detailed tiles to be DARK (since bg is white) */
     .hcc-detailed-tile,
     .hcc-detailed-tile h4,
@@ -367,30 +367,30 @@ input:focus, select:focus, textarea:focus {
     .hcc-detailed-tile span {
         color: #1a1a1a !important;
     }
-    
+
     /* Accent colors stay visible in detailed tiles */
     .hcc-detailed-tile [style*="color: #7c3aed"] {
         color: #7c3aed !important;
     }
-    
+
     .hcc-detailed-tile [style*="color: #28a745"] {
         color: #28a745 !important;
     }
-    
+
     /* Opportunity cards in dark mode */
     .opportunity-card {
         background: #2a2a2a !important;
         border-color: #444 !important;
     }
-    
+
     .opportunity-card strong {
         color: #b0b0b0 !important;
     }
-    
+
     .opportunity-card span {
         color: #e0e0e0 !important;
     }
-    
+
     /* ROI Portfolio Optimizer in dark mode */
     .scenario-row {
         background: #2a2a2a !important;
@@ -662,11 +662,11 @@ input:focus, select:focus, textarea:focus {
     .menu-toggle {
         display: none;
     }
-    
+
     .nav-tabs-container {
         display: block;
     }
-    
+
     .nav-sidebar {
         display: none;
     }
@@ -677,7 +677,7 @@ input:focus, select:focus, textarea:focus {
 /* Prevent number wrapping on iPhone */
 @supports (-webkit-touch-callout: none) {
     /* iPhone-specific styles */
-    
+
     /* Force 7+ digit numbers to stay on single line */
     span[style*="font-size: 1.5rem"],
     span[style*="font-size: 1.25rem"],
@@ -689,12 +689,12 @@ input:focus, select:focus, textarea:focus {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     /* Smaller font size for very long numbers on iPhone */
     span[style*="font-size: 2rem"] {
         font-size: 1.75rem !important;
     }
-    
+
     span[style*="font-size: 1.75rem"] {
         font-size: 1.5rem !important;
     }
@@ -703,7 +703,7 @@ input:focus, select:focus, textarea:focus {
 /* iPhone Safari text rendering */
 @media only screen and (max-width: 430px) {
     /* iPhone 14 Pro Max and smaller */
-    
+
     /* Force single-line for large numbers */
     .metric-value,
     span[style*="font-weight: 900"],
@@ -784,7 +784,7 @@ div[style*="background: white"] .hcc-name {
         padding-right: env(safe-area-inset-right);
         padding-bottom: env(safe-area-inset-bottom);
     }
-    
+
     .navbar {
         padding-top: max(1rem, env(safe-area-inset-top));
     }
@@ -801,7 +801,7 @@ div[style*="background: white"] .hcc-name {
         min-height: 44px !important; /* Apple's recommended minimum */
         padding: 0.75rem 1.5rem !important;
     }
-    
+
     /* Prevent text selection on buttons */
     button,
     .btn-primary,

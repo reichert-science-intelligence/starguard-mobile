@@ -9,6 +9,8 @@ pinned: false
 ---
 
 [![CI](https://github.com/reichert-science-intelligence/starguard-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/reichert-science-intelligence/starguard-mobile/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/)
+[![Tests](https://img.shields.io/badge/tests-19%20passed-brightgreen)](https://github.com/reichert-science-intelligence/starguard-mobile/actions)
 
 # 📱 StarGuard Mobile
 ### Medicare Advantage Intelligence Platform — Mobile Edition

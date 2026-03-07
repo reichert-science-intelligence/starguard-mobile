@@ -1,17 +1,13 @@
 """ROI Portfolio Optimizer - Interactive priority matrix, budget allocation, financial forecasting."""
 
-from shiny import ui, render, reactive
 from components.mobile_layout import (
-    mobile_page,
-    mobile_card,
-    mobile_input_group,
-    mobile_button,
-    metric_box,
-    info_row,
     alert_box,
-    divider,
-    progress_bar
+    metric_box,
+    mobile_button,
+    mobile_card,
+    mobile_page,
 )
+from shiny import reactive, render, ui
 
 # 7 HEDIS Measures for portfolio optimization (Impact vs Effort)
 # Impact: 1-10 scale from roi_per_point, star_impact, gap. Effort: 1-4 from difficulty
@@ -126,39 +122,62 @@ def roi_portfolio_optimizer_ui():
             **Optimize HEDIS investment** using an Impact vs Effort priority matrix.
             Allocate budget across 7 measures, model resource constraints, and forecast
             portfolio-level financial outcomes. Maximize ROI through strategic prioritization.
-            """)
+            """),
         ),
         mobile_card("Priority Matrix: Impact vs Effort", ui.output_ui("roi_priority_matrix")),
         mobile_card(
             "Budget Allocation Simulator",
-            ui.tags.p("Set total budget and allocation % per measure.", style="margin-bottom: 0.75rem; color: #666; font-size: 0.9rem;"),
-            ui.input_numeric("roi_total_budget", "Total Budget ($)", value=500000, min=50000, max=5000000, step=25000),
+            ui.tags.p(
+                "Set total budget and allocation % per measure.",
+                style="margin-bottom: 0.75rem; color: #666; font-size: 0.9rem;",
+            ),
+            ui.input_numeric(
+                "roi_total_budget",
+                "Total Budget ($)",
+                value=500000,
+                min=50000,
+                max=5000000,
+                step=25000,
+            ),
             ui.output_ui("roi_total_budget_display"),
             ui.output_ui("roi_allocation_sliders"),
             ui.div(
-                mobile_button("Apply Conservative", "roi_scenario_conservative", "secondary", icon=""),
+                mobile_button(
+                    "Apply Conservative", "roi_scenario_conservative", "secondary", icon=""
+                ),
                 mobile_button("Apply Balanced", "roi_scenario_balanced", "primary", icon=""),
                 mobile_button("Apply Aggressive", "roi_scenario_agg", "secondary", icon=""),
-                style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;"
+                style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;",
             ),
-            header_color="linear-gradient(135deg, #28a745 0%, #208537 100%)"
+            header_color="linear-gradient(135deg, #28a745 0%, #208537 100%)",
         ),
         mobile_card(
             "Resource Constraints",
-            ui.input_numeric("roi_max_budget", "Max Budget Constraint ($)", value=750000, min=100000, max=10000000, step=50000),
+            ui.input_numeric(
+                "roi_max_budget",
+                "Max Budget Constraint ($)",
+                value=750000,
+                min=100000,
+                max=10000000,
+                step=50000,
+            ),
             ui.output_ui("roi_max_budget_display"),
-            ui.input_numeric("roi_min_allocation_pct", "Min Allocation % per Measure", value=5, min=0, max=30, step=1),
+            ui.input_numeric(
+                "roi_min_allocation_pct",
+                "Min Allocation % per Measure",
+                value=5,
+                min=0,
+                max=30,
+                step=1,
+            ),
             ui.output_ui("roi_constraint_status"),
         ),
         mobile_card(
             "Investment Scenarios & ROI Projections",
             ui.output_ui("roi_scenario_results"),
-            header_color="#8b5cf6"
+            header_color="#8b5cf6",
         ),
-        mobile_card(
-            "Portfolio Financial Forecast",
-            ui.output_ui("roi_portfolio_forecast")
-        ),
+        mobile_card("Portfolio Financial Forecast", ui.output_ui("roi_portfolio_forecast")),
     )
 
 
@@ -220,25 +239,36 @@ def roi_portfolio_optimizer_server(input, output, session, get_current_page=lamb
             c = colors[qname]
             tiles = []
             for code, m in measures:
-                tiles.append(ui.div(
-                    ui.tags.strong(code, style=f"color: {c}; font-size: 1rem;"),
-                    ui.tags.div(m["name"], style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;"),
-                    ui.tags.div(f"Impact {m['impact']} | Effort {m['effort']}", style="font-size: 0.75rem; color: #999; margin-top: 0.25rem;"),
-                    style=f"padding: 0.75rem; background: #f8f9fa; border-left: 4px solid {c}; border-radius: 8px; margin-bottom: 0.5rem;"
-                ))
-            matrix_html.append(ui.div(
-                ui.tags.h4(qname, style=f"color: {c}; font-size: 1rem; margin: 0 0 0.5rem 0;"),
-                *tiles,
-                style="margin-bottom: 1.25rem;"
-            ))
+                tiles.append(
+                    ui.div(
+                        ui.tags.strong(code, style=f"color: {c}; font-size: 1rem;"),
+                        ui.tags.div(
+                            m["name"], style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;"
+                        ),
+                        ui.tags.div(
+                            f"Impact {m['impact']} | Effort {m['effort']}",
+                            style="font-size: 0.75rem; color: #999; margin-top: 0.25rem;",
+                        ),
+                        style=f"padding: 0.75rem; background: #f8f9fa; border-left: 4px solid {c}; border-radius: 8px; margin-bottom: 0.5rem;",
+                    )
+                )
+            matrix_html.append(
+                ui.div(
+                    ui.tags.h4(qname, style=f"color: {c}; font-size: 1rem; margin: 0 0 0.5rem 0;"),
+                    *tiles,
+                    style="margin-bottom: 1.25rem;",
+                )
+            )
         return ui.div(
             ui.div(
                 ui.tags.span("High Impact", style="font-weight: 700; color: #28a745;"),
                 ui.tags.span("  Low Effort", style="color: #666; font-size: 0.85rem;"),
-                style="margin-bottom: 0.5rem;"
+                style="margin-bottom: 0.5rem;",
             ),
             *matrix_html,
-            alert_box("Prioritize Quick Wins first, then Major Projects for maximum ROI.", type="info")
+            alert_box(
+                "Prioritize Quick Wins first, then Major Projects for maximum ROI.", type="info"
+            ),
         )
 
     @output
@@ -250,16 +280,19 @@ def roi_portfolio_optimizer_server(input, output, session, get_current_page=lamb
         for code, m in PORTFOLIO_MEASURES.items():
             sliders.append(
                 ui.div(
-                    ui.tags.label(f"{code}: {m['name']}", style="font-weight: 600; color: #333; font-size: 0.9rem;"),
+                    ui.tags.label(
+                        f"{code}: {m['name']}",
+                        style="font-weight: 600; color: #333; font-size: 0.9rem;",
+                    ),
                     ui.input_slider(
                         f"roi_alloc_{code}",
                         "",
                         min=0,
                         max=100,
                         value=100 // len(PORTFOLIO_MEASURES),
-                        step=1
+                        step=1,
                     ),
-                    style="margin-bottom: 1rem;"
+                    style="margin-bottom: 1rem;",
                 )
             )
         return ui.div(*sliders)
@@ -287,7 +320,7 @@ def roi_portfolio_optimizer_server(input, output, session, get_current_page=lamb
             val = 500000
         return ui.tags.div(
             f"Selected: ${val:,.0f}",
-            style="font-size: 0.875rem; color: #666; margin-top: -0.5rem; margin-bottom: 1rem;"
+            style="font-size: 0.875rem; color: #666; margin-top: -0.5rem; margin-bottom: 1rem;",
         )
 
     @output
@@ -302,7 +335,7 @@ def roi_portfolio_optimizer_server(input, output, session, get_current_page=lamb
             val = 750000
         return ui.tags.div(
             f"Limit: ${val:,.0f}",
-            style="font-size: 0.875rem; color: #666; margin-top: -0.5rem; margin-bottom: 1rem;"
+            style="font-size: 0.875rem; color: #666; margin-top: -0.5rem; margin-bottom: 1rem;",
         )
 
     @output
@@ -320,16 +353,16 @@ def roi_portfolio_optimizer_server(input, output, session, get_current_page=lamb
         return ui.div(
             ui.div(
                 "Budget within limit" if not over_budget else "Exceeds max budget",
-                style=f"padding: 0.75rem; border-radius: 8px; font-weight: 600; background: {'#d4edda' if not over_budget else '#f8d7da'}; color: {'#0f5132' if not over_budget else '#842029'};"
+                style=f"padding: 0.75rem; border-radius: 8px; font-weight: 600; background: {'#d4edda' if not over_budget else '#f8d7da'}; color: {'#0f5132' if not over_budget else '#842029'};",
             ),
             ui.div(
                 f"Total: ${total_budget:,.0f} / Max: ${max_budget:,.0f}",
-                style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;"
+                style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;",
             ),
             ui.div(
                 f"Min allocation: {min_pct}% per measure",
-                style="font-size: 0.875rem; color: #666; margin-top: 0.25rem;"
-            )
+                style="font-size: 0.875rem; color: #666; margin-top: 0.25rem;",
+            ),
         )
 
     @output
@@ -355,25 +388,44 @@ def roi_portfolio_optimizer_server(input, output, session, get_current_page=lamb
             est_improvement = min(gap, 3.0)
             rev_impact = rev_per_pt * est_improvement * (pct / 100.0)
             total_revenue += rev_impact
-            rows.append(ui.div(
+            rows.append(
                 ui.div(
-                    ui.tags.strong(code, style="color: #7c3aed;"),
-                    ui.tags.span(f" ${alloc_dollars:,.0f}", style="color: #333;"),
-                    style="margin-bottom: 0.25rem;"
-                ),
-                ui.div(
-                    f"Est. revenue impact: ${rev_impact:,.0f}",
-                    style="font-size: 0.9rem; color: #28a745; font-weight: 600;"
-                ),
-                class_="scenario-row",
-                style="padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.75rem; border-left: 3px solid #7c3aed;"
-            ))
+                    ui.div(
+                        ui.tags.strong(code, style="color: #7c3aed;"),
+                        ui.tags.span(f" ${alloc_dollars:,.0f}", style="color: #333;"),
+                        style="margin-bottom: 0.25rem;",
+                    ),
+                    ui.div(
+                        f"Est. revenue impact: ${rev_impact:,.0f}",
+                        style="font-size: 0.9rem; color: #28a745; font-weight: 600;",
+                    ),
+                    class_="scenario-row",
+                    style="padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.75rem; border-left: 3px solid #7c3aed;",
+                )
+            )
         return ui.div(
-            metric_box("Total Budget", f"${total_budget:,.0f}", color="#7c3aed", subtitle="Allocated across measures"),
-            metric_box("Projected Revenue", f"${total_revenue:,.0f}", color="#28a745", subtitle="Est. from improvements"),
-            metric_box("ROI Ratio", f"{(total_revenue / total_budget):.1f}x" if total_budget else "N/A", color="#ff6b00", subtitle="Return on investment"),
-            ui.tags.h4("By Measure", style="color: #1a1a1a; margin: 1rem 0 0.5rem 0; font-size: 1.1rem;"),
-            *rows
+            metric_box(
+                "Total Budget",
+                f"${total_budget:,.0f}",
+                color="#7c3aed",
+                subtitle="Allocated across measures",
+            ),
+            metric_box(
+                "Projected Revenue",
+                f"${total_revenue:,.0f}",
+                color="#28a745",
+                subtitle="Est. from improvements",
+            ),
+            metric_box(
+                "ROI Ratio",
+                f"{(total_revenue / total_budget):.1f}x" if total_budget else "N/A",
+                color="#ff6b00",
+                subtitle="Return on investment",
+            ),
+            ui.tags.h4(
+                "By Measure", style="color: #1a1a1a; margin: 1rem 0 0.5rem 0; font-size: 1.1rem;"
+            ),
+            *rows,
         )
 
     @output
@@ -388,7 +440,7 @@ def roi_portfolio_optimizer_server(input, output, session, get_current_page=lamb
             total_budget = 500000
             allocations = {m: 100 // len(PORTFOLIO_MEASURES) for m in PORTFOLIO_MEASURES}
         total_pct = sum(allocations.values())
-        scale = (total_pct / 100.0) if total_pct else 1.0
+        (total_pct / 100.0) if total_pct else 1.0
         total_revenue = 0
         for code, m in PORTFOLIO_MEASURES.items():
             pct = allocations.get(code, 0)
@@ -400,31 +452,49 @@ def roi_portfolio_optimizer_server(input, output, session, get_current_page=lamb
         net_benefit = total_revenue - total_budget
         return ui.div(
             ui.div(
-                ui.tags.h3("Portfolio Summary", style="color: #7c3aed; text-align: center; margin: 0 0 1rem 0; font-size: 1.25rem;"),
+                ui.tags.h3(
+                    "Portfolio Summary",
+                    style="color: #7c3aed; text-align: center; margin: 0 0 1rem 0; font-size: 1.25rem;",
+                ),
                 ui.div(
                     ui.div("Total Investment", style="font-size: 0.875rem; color: #666;"),
-                    ui.div(f"${total_budget:,.0f}", style="font-size: 2rem; font-weight: 700; color: #1a1a1a;"),
-                    style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.75rem;"
+                    ui.div(
+                        f"${total_budget:,.0f}",
+                        style="font-size: 2rem; font-weight: 700; color: #1a1a1a;",
+                    ),
+                    style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.75rem;",
                 ),
                 ui.div(
                     ui.div("Projected Revenue", style="font-size: 0.875rem; color: #666;"),
-                    ui.div(f"${total_revenue:,.0f}", style="font-size: 2rem; font-weight: 700; color: #28a745;"),
-                    style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.75rem;"
+                    ui.div(
+                        f"${total_revenue:,.0f}",
+                        style="font-size: 2rem; font-weight: 700; color: #28a745;",
+                    ),
+                    style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.75rem;",
                 ),
                 ui.div(
                     ui.div("Net Benefit", style="font-size: 0.875rem; color: #666;"),
-                    ui.div(f"${net_benefit:,.0f}", style=f"font-size: 2rem; font-weight: 700; color: {'#28a745' if net_benefit >= 0 else '#dc3545'};"),
-                    style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.75rem;"
+                    ui.div(
+                        f"${net_benefit:,.0f}",
+                        style=f"font-size: 2rem; font-weight: 700; color: {'#28a745' if net_benefit >= 0 else '#dc3545'};",
+                    ),
+                    style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.75rem;",
                 ),
                 ui.div(
                     ui.div("Portfolio ROI", style="font-size: 0.875rem; color: #666;"),
-                    ui.div(f"{roi_ratio:.2f}x", style="font-size: 2rem; font-weight: 700; color: #ff6b00;"),
-                    style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;"
+                    ui.div(
+                        f"{roi_ratio:.2f}x",
+                        style="font-size: 2rem; font-weight: 700; color: #ff6b00;",
+                    ),
+                    style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;",
                 ),
-                style="margin-bottom: 1.5rem;"
+                style="margin-bottom: 1.5rem;",
             ),
-            alert_box("Forecasts assume 1–3% improvement per measure based on allocation weight. Actual results vary by intervention execution.", type="info")
+            alert_box(
+                "Forecasts assume 1–3% improvement per measure based on allocation weight. Actual results vary by intervention execution.",
+                type="info",
+            ),
         )
 
 
-__all__ = ['roi_portfolio_optimizer_ui', 'roi_portfolio_optimizer_server']
+__all__ = ["roi_portfolio_optimizer_ui", "roi_portfolio_optimizer_server"]

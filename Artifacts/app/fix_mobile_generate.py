@@ -10,18 +10,19 @@ Patches:
 Run from starguard-mobile/Artifacts/app dir:
     python fix_mobile_generate.py
 """
+
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
 
 # ─── 1. hedis_gap_ui.py: textarea + button ───────────────────────────────────
-HEDIS_GAP_UI_OLD = '''            ui.input_text_area(
+HEDIS_GAP_UI_OLD = """            ui.input_text_area(
                 "gap_claude_rec", "Claude AI Recommendation",
                 placeholder="Paste Claude-generated care gap recommendation...",
                 rows=3
-            ),'''
+            ),"""
 
-HEDIS_GAP_UI_NEW = '''            ui.div(
+HEDIS_GAP_UI_NEW = """            ui.div(
                 ui.input_action_button(
                     "btn_generate_gap_rec",
                     "🤖 Generate Recommendation",
@@ -34,10 +35,10 @@ HEDIS_GAP_UI_NEW = '''            ui.div(
                 "gap_claude_rec", "Claude AI Recommendation",
                 placeholder="Fill gap details above, click 🤖 Generate — or paste manually.",
                 rows=3
-            ),'''
+            ),"""
 
 # ─── 2. app.py: JS handler — insert after cloud_status_css() ───────────────────
-JS_ANCHOR = "        cloud_status_css(),\n        ui.tags.style(\"\"\""
+JS_ANCHOR = '        cloud_status_css(),\n        ui.tags.style("""'
 JS_INSERT = '''        cloud_status_css(),
         ui.tags.script("""
             (function(){
@@ -58,11 +59,11 @@ JS_INSERT = '''        cloud_status_css(),
         ui.tags.style("""'''
 
 # ─── 3. app.py: generate server handler ─────────────────────────────────────
-SERVER_ANCHOR = '''    @reactive.effect
+SERVER_ANCHOR = """    @reactive.effect
     @reactive.event(input.btn_push_gap)
     def _push_gap():
         if input.page_nav() != "hedisgaps":
-            return'''
+            return"""
 
 SERVER_INSERT = '''
     @reactive.effect

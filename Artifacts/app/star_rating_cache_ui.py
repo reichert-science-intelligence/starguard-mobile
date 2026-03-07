@@ -69,8 +69,10 @@ def star_rating_cache_panel() -> ui.div:
         ui.div("⭐ Star Rating Forecast Cache", class_="star-cache-title"),
         ui.div(
             ui.output_text("star_cache_sync_status"),
-            ui.input_action_button("btn_refresh_cache", "↻ Refresh", class_="btn btn-sm btn-outline-secondary"),
-            class_="cache-sync-row"
+            ui.input_action_button(
+                "btn_refresh_cache", "↻ Refresh", class_="btn btn-sm btn-outline-secondary"
+            ),
+            class_="cache-sync-row",
         ),
         ui.output_ui("cache_freshness_banner"),
         ui.output_ui("forecast_hero_card"),
@@ -79,46 +81,79 @@ def star_rating_cache_panel() -> ui.div:
             ui.card_header("Run & Cache New Forecast"),
             ui.layout_columns(
                 ui.input_text("fcst_contract_id", "Contract ID", placeholder="e.g. H1234"),
-                ui.input_text("fcst_plan_name", "Plan Name", placeholder="e.g. BlueCare Medicare Advantage"),
-                col_widths=[4, 8]
+                ui.input_text(
+                    "fcst_plan_name", "Plan Name", placeholder="e.g. BlueCare Medicare Advantage"
+                ),
+                col_widths=[4, 8],
             ),
             ui.layout_columns(
                 ui.input_numeric("fcst_year", "Measurement Year", value=2026, min=2020, max=2030),
-                ui.input_numeric("fcst_current", "Current Stars", value=3.5, min=1.0, max=5.0, step=0.5),
-                ui.input_numeric("fcst_projected", "Projected Stars", value=4.0, min=1.0, max=5.0, step=0.5),
-                col_widths=[4, 4, 4]
+                ui.input_numeric(
+                    "fcst_current", "Current Stars", value=3.5, min=1.0, max=5.0, step=0.5
+                ),
+                ui.input_numeric(
+                    "fcst_projected", "Projected Stars", value=4.0, min=1.0, max=5.0, step=0.5
+                ),
+                col_widths=[4, 4, 4],
             ),
             ui.layout_columns(
                 ui.input_text("fcst_top_gap", "Top Gap Measure", placeholder="e.g. CBP"),
                 ui.input_numeric("fcst_gaps_open", "Gaps Open", value=0, min=0),
                 ui.input_numeric("fcst_gaps_closed", "Gaps Closed", value=0, min=0),
-                col_widths=[4, 4, 4]
+                col_widths=[4, 4, 4],
             ),
             ui.layout_columns(
-                ui.input_numeric("fcst_hedis_rate", "HEDIS Completion Rate", value=0.75, min=0.0, max=1.0, step=0.01),
-                ui.input_numeric("fcst_hcc", "HCC Risk Score", value=1.0, min=0.0, max=5.0, step=0.01),
-                ui.input_numeric("fcst_cahps", "CAHPS Score", value=80.0, min=0.0, max=100.0, step=0.1),
-                col_widths=[4, 4, 4]
+                ui.input_numeric(
+                    "fcst_hedis_rate",
+                    "HEDIS Completion Rate",
+                    value=0.75,
+                    min=0.0,
+                    max=1.0,
+                    step=0.01,
+                ),
+                ui.input_numeric(
+                    "fcst_hcc", "HCC Risk Score", value=1.0, min=0.0, max=5.0, step=0.01
+                ),
+                ui.input_numeric(
+                    "fcst_cahps", "CAHPS Score", value=80.0, min=0.0, max=100.0, step=0.1
+                ),
+                col_widths=[4, 4, 4],
             ),
             ui.layout_columns(
                 ui.input_numeric("fcst_roi", "ROI Projection ($)", value=0, min=0, step=1000),
-                ui.input_select("fcst_confidence", "Confidence Level", choices=["HIGH", "MEDIUM", "LOW"]),
-                col_widths=[6, 6]
+                ui.input_select(
+                    "fcst_confidence", "Confidence Level", choices=["HIGH", "MEDIUM", "LOW"]
+                ),
+                col_widths=[6, 6],
             ),
-            ui.input_text_area("fcst_narrative", "Claude AI Forecast Narrative",
-                placeholder="Paste Claude-generated forecast summary here...", rows=3),
-            ui.input_action_button("btn_cache_forecast", "⭐ Cache Forecast to Cloud",
-                class_="btn btn-primary w-100", style="background:#4A3E8F; border-color:#4A3E8F;"),
+            ui.input_text_area(
+                "fcst_narrative",
+                "Claude AI Forecast Narrative",
+                placeholder="Paste Claude-generated forecast summary here...",
+                rows=3,
+            ),
+            ui.input_action_button(
+                "btn_cache_forecast",
+                "⭐ Cache Forecast to Cloud",
+                class_="btn btn-primary w-100",
+                style="background:#4A3E8F; border-color:#4A3E8F;",
+            ),
             ui.output_ui("cache_push_result"),
         ),
         ui.card(
             ui.card_header("Forecast History"),
             ui.layout_columns(
-                ui.input_text("fcst_filter_contract", "Filter by Contract ID", placeholder="Leave blank for all"),
-                ui.input_action_button("btn_load_history", "Load History", class_="btn btn-sm btn-secondary"),
-                col_widths=[8, 4]
+                ui.input_text(
+                    "fcst_filter_contract",
+                    "Filter by Contract ID",
+                    placeholder="Leave blank for all",
+                ),
+                ui.input_action_button(
+                    "btn_load_history", "Load History", class_="btn btn-sm btn-secondary"
+                ),
+                col_widths=[8, 4],
             ),
             ui.output_data_frame("forecast_history_table"),
         ),
-        class_="star-cache-panel"
+        class_="star-cache-panel",
     )

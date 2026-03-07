@@ -6,6 +6,7 @@
 
 from htmltools import Tag
 from shiny import ui
+
 from hedis_gap_trail import get_gap_suppressions
 
 
@@ -38,7 +39,12 @@ def suppression_banner(app_type: str = "gap") -> Tag:
     active = get_gap_suppressions()
     label = "Gap"
     if active:
-        bg, border, text_color, msg = "#fffbeb", "#fcd34d", "#92400e", f"[!] {len(active)} {label} suppression(s) active"
+        bg, border, text_color, msg = (
+            "#fffbeb",
+            "#fcd34d",
+            "#92400e",
+            f"[!] {len(active)} {label} suppression(s) active",
+        )
     else:
         bg, border, text_color, msg = "#f0fdf4", "#bbf7d0", "#166534", "[OK] No suppressions active"
 
@@ -47,14 +53,14 @@ def suppression_banner(app_type: str = "gap") -> Tag:
         ui.div(
             ui.span(msg.split()[0], class_="suppression-banner-icon"),
             ui.span(msg, class_="suppression-banner-text"),
-            style=f"display: flex; align-items: center; gap: 8px; color: {text_color};"
+            style=f"display: flex; align-items: center; gap: 8px; color: {text_color};",
         ),
         ui.a(
             "Manage in Admin View ->",
             href="#",
             style=f"color: {text_color}; font-size: 12px; text-decoration: none;",
-            id="suppression_manage_link"
+            id="suppression_manage_link",
         ),
         class_="suppression-banner",
-        style=f"background: {bg}; border: 1px solid {border};"
+        style=f"background: {bg}; border: 1px solid {border};",
     )

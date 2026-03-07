@@ -5,16 +5,17 @@
 # Brand: Purple #4A3E8F | Gold #D4AF37 | Green #10b981
 # ─────────────────────────────────────────────────────────────
 
-from shiny import ui
+
 import pandas as pd
-from typing import Optional
+from shiny import ui
 
 try:
-    from hedis_gap_trail import HedisGapDB, fetch_hedis_gaps, apply_gap_suppression_filter
+    from hedis_gap_trail import HedisGapDB, apply_gap_suppression_filter, fetch_hedis_gaps
 except ImportError:
     HedisGapDB = None
     fetch_hedis_gaps = None
-    apply_gap_suppression_filter = lambda df: df
+    def apply_gap_suppression_filter(df):
+        return df
 
 
 def intervention_optimizer_css() -> ui.tags.style:
@@ -39,7 +40,7 @@ def compute_priority_scores(df: pd.DataFrame) -> pd.DataFrame:
     return df.sort_values("priority_score", ascending=False)
 
 
-def intervention_optimizer_panel(gap_db: Optional[HedisGapDB] = None) -> ui.div:
+def intervention_optimizer_panel(gap_db: HedisGapDB | None = None) -> ui.div:
     """
     Drop-in panel for StarGuard Mobile: shows top interventions by priority.
     Pass gap_db if connected; otherwise shows placeholder.
@@ -50,5 +51,5 @@ def intervention_optimizer_panel(gap_db: Optional[HedisGapDB] = None) -> ui.div:
         ui.p("Top gaps by ROI × Star Impact (suppression applied)", class_="text-muted"),
         ui.output_ui("intervention_optimizer_table"),
         ui.output_text("intervention_optimizer_status"),
-        class_="intervention-optimizer"
+        class_="intervention-optimizer",
     )

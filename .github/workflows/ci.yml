@@ -25,12 +25,12 @@ jobs:
           pip install -e ".[dev]" 2>/dev/null || pip install Artifacts/requirements.txt
 
       - name: Ruff lint
-        run: ruff check Artifacts/app/ --config pyproject.toml || true
+        run: ruff check Artifacts/app/ --config pyproject.toml
 
       - name: Mypy type-check
         run: |
           export PYTHONPATH="${GITHUB_WORKSPACE}/Artifacts/app"
-          mypy Artifacts/app/hedis_gap_trail.py Artifacts/app/suppression_banner.py Artifacts/app/hitl_admin_view.py --config-file pyproject.toml || true
+          mypy Artifacts/app/hedis_gap_trail.py Artifacts/app/suppression_banner.py Artifacts/app/hitl_admin_view.py --config-file pyproject.toml
 
       - name: Pytest
         run: pytest tests/ -v --tb=short

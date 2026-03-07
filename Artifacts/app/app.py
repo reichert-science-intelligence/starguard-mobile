@@ -4,30 +4,44 @@ Main application entry point with hamburger menu sidebar navigation
 """
 
 from pathlib import Path
+
 import pandas as pd
-from shiny import App, ui, render, reactive
-from utils.theme_config import get_theme, get_mobile_css, get_mobile_meta
-from cloud_status_badge import cloud_status_css, starguard_mobile_badge, provenance_footer
-from hedis_gap_trail import HedisGapDB, push_hedis_gap, fetch_hedis_gaps, fetch_gap_summary, close_hedis_gap, get_gap_suppressions, add_gap_suppression, remove_gap_suppression
 from hedis_gap_ui import hedis_gap_panel
-from hitl_admin_view import hitl_admin_panel
-from suppression_banner import suppression_banner
+from shiny import App, reactive, render, ui
 from star_rating_cache import (
-    StarRatingCacheDB, cache_forecast,
-    fetch_latest_forecast, fetch_forecast_history,
-    fetch_cache_summary, star_label
+    StarRatingCacheDB,
+    cache_forecast,
+    fetch_cache_summary,
+    fetch_forecast_history,
+    fetch_latest_forecast,
+    star_label,
 )
 from star_rating_cache_ui import star_rating_cache_panel
-from pages.star_predictor import star_predictor_ui, star_predictor_server
-from pages.hedis_analyzer import hedis_analyzer_ui, hedis_analyzer_server
-from pages.ai_validation import ai_validation_ui, ai_validation_server
-from pages.risk_stratification import risk_stratification_ui, risk_stratification_server
-from pages.roi_portfolio_optimizer import roi_portfolio_optimizer_ui, roi_portfolio_optimizer_server
-from pages.care_gap_workflow import care_gap_workflow_ui, care_gap_workflow_server
-from pages.executive_dashboard import executive_dashboard_ui, executive_dashboard_server
-from pages.provider_scorecard import provider_scorecard_ui, provider_scorecard_server
-from pages.model_monitor import model_monitor_ui, model_monitor_server
-from pages.member_profile import member_profile_ui, member_profile_server
+from utils.theme_config import get_mobile_css, get_mobile_meta, get_theme
+
+from cloud_status_badge import cloud_status_css, provenance_footer, starguard_mobile_badge
+from hedis_gap_trail import (
+    HedisGapDB,
+    add_gap_suppression,
+    close_hedis_gap,
+    fetch_gap_summary,
+    fetch_hedis_gaps,
+    get_gap_suppressions,
+    push_hedis_gap,
+    remove_gap_suppression,
+)
+from hitl_admin_view import hitl_admin_panel
+from pages.ai_validation import ai_validation_server, ai_validation_ui
+from pages.care_gap_workflow import care_gap_workflow_server, care_gap_workflow_ui
+from pages.executive_dashboard import executive_dashboard_server, executive_dashboard_ui
+from pages.hedis_analyzer import hedis_analyzer_server, hedis_analyzer_ui
+from pages.member_profile import member_profile_server, member_profile_ui
+from pages.model_monitor import model_monitor_server, model_monitor_ui
+from pages.provider_scorecard import provider_scorecard_server, provider_scorecard_ui
+from pages.risk_stratification import risk_stratification_server, risk_stratification_ui
+from pages.roi_portfolio_optimizer import roi_portfolio_optimizer_server, roi_portfolio_optimizer_ui
+from pages.star_predictor import star_predictor_server, star_predictor_ui
+from suppression_banner import suppression_banner
 
 
 def navigation_bar():
@@ -43,145 +57,132 @@ def navigation_bar():
             ui.div(
                 ui.h1(
                     "StarGuard AI",
-                    style="color: white; font-size: 1.5rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;"
+                    style="color: white; font-size: 1.5rem; margin: 0; font-weight: 700; letter-spacing: -0.5px;",
                 ),
                 ui.p(
                     "Medicare Advantage Intelligence",
-                    style="color: rgba(255,255,255,0.85); font-size: 0.875rem; margin: 0.25rem 0 0 0; font-weight: 400;"
+                    style="color: rgba(255,255,255,0.85); font-size: 0.875rem; margin: 0.25rem 0 0 0; font-weight: 400;",
                 ),
             ),
-            class_="navbar"
+            class_="navbar",
         ),
         # Hamburger menu button (mobile only)
         ui.div(
-            ui.div(
-                ui.tags.span(),
-                ui.tags.span(),
-                ui.tags.span(),
-                class_="hamburger-icon"
-            ),
+            ui.div(ui.tags.span(), ui.tags.span(), ui.tags.span(), class_="hamburger-icon"),
             id="menu-toggle",
             class_="menu-toggle",
-            onclick="toggleSidebar()"
+            onclick="toggleSidebar()",
         ),
         # Sidebar overlay (darkens background when open)
-        ui.div(
-            id="sidebar-overlay",
-            class_="sidebar-overlay",
-            onclick="toggleSidebar()"
-        ),
+        ui.div(id="sidebar-overlay", class_="sidebar-overlay", onclick="toggleSidebar()"),
         # Sidebar navigation
         ui.div(
-            ui.div(
-                ui.tags.h2("Navigation"),
-                ui.tags.p("Select a page"),
-                class_="sidebar-header"
-            ),
+            ui.div(ui.tags.h2("Navigation"), ui.tags.p("Select a page"), class_="sidebar-header"),
             ui.div(
                 ui.div(
                     "📊 Executive Dashboard",
                     class_="sidebar-nav-item active",
                     id="nav-dashboard",
-                    onclick="navigateTo('dashboard')"
+                    onclick="navigateTo('dashboard')",
                 ),
                 ui.div(
                     "⭐ Star Rating Predictor",
                     class_="sidebar-nav-item",
                     id="nav-star",
-                    onclick="navigateTo('star')"
+                    onclick="navigateTo('star')",
                 ),
                 ui.div(
                     "⭐ Star Forecast Cache",
                     class_="sidebar-nav-item",
                     id="nav-starcache",
-                    onclick="navigateTo('starcache')"
+                    onclick="navigateTo('starcache')",
                 ),
                 ui.div(
                     "📊 HEDIS Gap Analyzer",
                     class_="sidebar-nav-item",
                     id="nav-hedis",
-                    onclick="navigateTo('hedis')"
+                    onclick="navigateTo('hedis')",
                 ),
                 ui.div(
                     "📊 HEDIS Gaps (Cloud)",
                     class_="sidebar-nav-item",
                     id="nav-hedisgaps",
-                    onclick="navigateTo('hedisgaps')"
+                    onclick="navigateTo('hedisgaps')",
                 ),
                 ui.div(
                     "[Admin] Admin View",
                     class_="sidebar-nav-item",
                     id="nav-adminview",
-                    onclick="navigateTo('adminview')"
+                    onclick="navigateTo('adminview')",
                 ),
                 ui.div(
                     "📊 Member Risk Stratification",
                     class_="sidebar-nav-item",
                     id="nav-risk",
-                    onclick="navigateTo('risk')"
+                    onclick="navigateTo('risk')",
                 ),
                 ui.div(
                     "💰 ROI Portfolio Optimizer",
                     class_="sidebar-nav-item",
                     id="nav-roi",
-                    onclick="navigateTo('roi')"
+                    onclick="navigateTo('roi')",
                 ),
                 ui.div(
                     "📋 Care Gap Closure Workflow",
                     class_="sidebar-nav-item",
                     id="nav-workflow",
-                    onclick="navigateTo('workflow')"
+                    onclick="navigateTo('workflow')",
                 ),
                 ui.div(
                     "👨‍⚕️ Provider Scorecard",
                     class_="sidebar-nav-item",
                     id="nav-providers",
-                    onclick="navigateTo('providers')"
+                    onclick="navigateTo('providers')",
                 ),
                 ui.div(
                     "👤 Member 360° Profile",
                     class_="sidebar-nav-item",
                     id="nav-profile",
-                    onclick="navigateTo('profile')"
+                    onclick="navigateTo('profile')",
                 ),
                 ui.div(
                     "🤖 AI Validation Dashboard",
                     class_="sidebar-nav-item",
                     id="nav-ai",
-                    onclick="navigateTo('ai')"
+                    onclick="navigateTo('ai')",
                 ),
                 ui.div(
                     "🤖 Model Monitor",
                     class_="sidebar-nav-item",
                     id="nav-monitor",
-                    onclick="navigateTo('monitor')"
+                    onclick="navigateTo('monitor')",
                 ),
                 ui.div(
                     "ℹ️ About",
                     class_="sidebar-nav-item",
                     id="nav-about",
-                    onclick="navigateTo('about')"
+                    onclick="navigateTo('about')",
                 ),
                 ui.div(
                     "📋 Services & Pricing",
                     class_="sidebar-nav-item",
                     id="nav-services",
-                    onclick="navigateTo('services')"
+                    onclick="navigateTo('services')",
                 ),
-                class_="sidebar-nav"
+                class_="sidebar-nav",
             ),
             ui.div(
                 ui.tags.hr(style="margin: 1rem 1.5rem; border-color: #e0e0e0;"),
                 ui.div(
                     ui.tags.small(
                         "StarGuard AI v1.0",
-                        style="display: block; text-align: center; color: #999; font-size: 0.75rem;"
+                        style="display: block; text-align: center; color: #999; font-size: 0.75rem;",
                     ),
-                    style="padding: 0 1.5rem 1rem 1.5rem;"
-                )
+                    style="padding: 0 1.5rem 1rem 1.5rem;",
+                ),
             ),
             id="nav-sidebar",
-            class_="nav-sidebar"
+            class_="nav-sidebar",
         ),
         # Navigation tabs (desktop only - hidden on mobile)
         ui.div(
@@ -203,12 +204,12 @@ def navigation_bar():
                     "ai": "🤖 AI Validation",
                     "monitor": "🤖 ML Monitor",
                     "about": "ℹ️ About",
-                    "services": "📋 Services"
+                    "services": "📋 Services",
                 },
                 selected="dashboard",
-                inline=True
+                inline=True,
             ),
-            class_="nav-tabs-container"
+            class_="nav-tabs-container",
         ),
         # JavaScript for sidebar functionality
         ui.tags.script("""
@@ -233,7 +234,7 @@ def navigation_bar():
                 if (navEl) navEl.classList.add('active');
                 toggleSidebar();
             }
-        """)
+        """),
     )
 
 
@@ -250,11 +251,11 @@ def footer():
         ui.tags.hr(style="margin: 2rem 0 1rem 0; border-color: #e0e0e0;"),
         ui.div(
             ui.markdown("""
-            **StarGuard AI** | Built by Robert Reichert  
+            **StarGuard AI** | Built by Robert Reichert
             [LinkedIn](https://www.linkedin.com/in/robertreichert-healthcareai/) | [Portfolio](https://tinyurl.com/bdevpdz5)
             """),
-            style="text-align: center; padding: 1rem; color: #666; font-size: 0.875rem;"
-        )
+            style="text-align: center; padding: 1rem; color: #666; font-size: 0.875rem;",
+        ),
     )
 
 
@@ -264,17 +265,14 @@ def placeholder_page(title, emoji):
         ui.div(title, class_="card-header"),
         ui.div(
             ui.p(f"{emoji} {title} - Page content will go here when implemented."),
-            class_="card-body"
+            class_="card-body",
         ),
-        class_="card"
+        class_="card",
     )
 
 
 app_ui = ui.page_fluid(
-    ui.tags.head(
-        ui.HTML(get_mobile_meta()),
-        ui.HTML(get_mobile_css())
-    ),
+    ui.tags.head(ui.HTML(get_mobile_meta()), ui.HTML(get_mobile_css())),
     ui.head_content(
         cloud_status_css(),
         ui.tags.script("""
@@ -312,7 +310,7 @@ app_ui = ui.page_fluid(
                 padding: 4px 12px !important;
                 text-align: center !important;
             }
-        """)
+        """),
     ),
     navigation_bar(),
     starguard_mobile_badge(mode="strip"),
@@ -320,12 +318,13 @@ app_ui = ui.page_fluid(
     footer(),
     provenance_footer(app_variant="starguard"),
     theme=get_theme(),
-    title="StarGuard AI - Medicare Advantage Intelligence"
+    title="StarGuard AI - Medicare Advantage Intelligence",
 )
 
 
 def server(input, output, session):
-    get_page = lambda: input.page_nav()
+    def get_page():
+        return input.page_nav()
     star_predictor_server(input, output, session, get_current_page=get_page)
 
     # ── HEDIS Gap Refresh (Google Sheets cloud) ───
@@ -353,14 +352,33 @@ def server(input, output, session):
         if "error" in s:
             return ui.div(f"⚠ {s['error']}", style="color:#f87171;font-size:12px;")
         return ui.div(
-            ui.div(ui.div(str(s["total"]), class_="kpi-value"), ui.div("Total Gaps", class_="kpi-label"), class_="kpi-card"),
-            ui.div(ui.div(str(s["open"]), class_="kpi-value"), ui.div("Open", class_="kpi-label"), class_="kpi-card kpi-open"),
-            ui.div(ui.div(str(s["closed"]), class_="kpi-value"), ui.div("Closed", class_="kpi-label"), class_="kpi-card kpi-closed"),
-            ui.div(ui.div(str(s["avg_star_impact"]), class_="kpi-value"), ui.div("Avg Star Impact", class_="kpi-label"), class_="kpi-card"),
-            ui.div(ui.div(f"${s['total_roi']:,.0f}", class_="kpi-value"), ui.div("Est. ROI", class_="kpi-label"), class_="kpi-card kpi-roi"),
-            class_="kpi-row"
+            ui.div(
+                ui.div(str(s["total"]), class_="kpi-value"),
+                ui.div("Total Gaps", class_="kpi-label"),
+                class_="kpi-card",
+            ),
+            ui.div(
+                ui.div(str(s["open"]), class_="kpi-value"),
+                ui.div("Open", class_="kpi-label"),
+                class_="kpi-card kpi-open",
+            ),
+            ui.div(
+                ui.div(str(s["closed"]), class_="kpi-value"),
+                ui.div("Closed", class_="kpi-label"),
+                class_="kpi-card kpi-closed",
+            ),
+            ui.div(
+                ui.div(str(s["avg_star_impact"]), class_="kpi-value"),
+                ui.div("Avg Star Impact", class_="kpi-label"),
+                class_="kpi-card",
+            ),
+            ui.div(
+                ui.div(f"${s['total_roi']:,.0f}", class_="kpi-value"),
+                ui.div("Est. ROI", class_="kpi-label"),
+                class_="kpi-card kpi-roi",
+            ),
+            class_="kpi-row",
         )
-
 
     @reactive.effect
     @reactive.event(input.btn_generate_gap_rec)
@@ -370,6 +388,7 @@ def server(input, output, session):
         session.send_custom_message("gap_show_loading", {})
         try:
             import anthropic
+
             client = anthropic.Anthropic()
             member_id = input.gap_member_id() or "N/A"
             member_name = input.gap_member_name() or "N/A"
@@ -424,7 +443,10 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         if r is None:
             return ui.div()
         if r.get("success"):
-            return ui.div(f"✅ {r.get('gap_id', '')} pushed — {r.get('measure_name', '')} — {r.get('timestamp', '')}", class_="gap-push-success")
+            return ui.div(
+                f"✅ {r.get('gap_id', '')} pushed — {r.get('measure_name', '')} — {r.get('timestamp', '')}",
+                class_="gap-push-success",
+            )
         return ui.div(f"❌ {r.get('error', '')}", class_="gap-push-error")
 
     @output
@@ -434,10 +456,14 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         input.btn_push_gap()
         input.btn_close_gap()
         return render.DataGrid(
-            fetch_hedis_gaps(hedis_db, n=15,
+            fetch_hedis_gaps(
+                hedis_db,
+                n=15,
                 filter_status=input.gap_filter_status() or "ALL",
-                filter_measure=input.gap_filter_measure() or "ALL"),
-            width="100%", height="320px"
+                filter_measure=input.gap_filter_measure() or "ALL",
+            ),
+            width="100%",
+            height="320px",
         )
 
     @reactive.effect
@@ -494,8 +520,13 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         if r is None:
             return ui.div()
         if r.get("success"):
-            return ui.div("[OK] Added suppression", style="color:#166534; font-size:12px; margin-top:6px;")
-        return ui.div(f"[!] {r.get('error','Failed')}", style="color:#991b1b; font-size:12px; margin-top:6px;")
+            return ui.div(
+                "[OK] Added suppression", style="color:#166534; font-size:12px; margin-top:6px;"
+            )
+        return ui.div(
+            f"[!] {r.get('error', 'Failed')}",
+            style="color:#991b1b; font-size:12px; margin-top:6px;",
+        )
 
     @output
     @render.ui
@@ -506,8 +537,13 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         if r is None:
             return ui.div()
         if r.get("success"):
-            return ui.div("[OK] Removed suppression", style="color:#166534; font-size:12px; margin-top:6px;")
-        return ui.div(f"[!] {r.get('error','Failed')}", style="color:#991b1b; font-size:12px; margin-top:6px;")
+            return ui.div(
+                "[OK] Removed suppression", style="color:#166534; font-size:12px; margin-top:6px;"
+            )
+        return ui.div(
+            f"[!] {r.get('error', 'Failed')}",
+            style="color:#991b1b; font-size:12px; margin-top:6px;",
+        )
 
     @output
     @render.ui
@@ -518,12 +554,18 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         input.btn_refresh_hitl_gap()
         rules = get_gap_suppressions()
         if not rules:
-            return ui.div("No suppression rules.", style="color:#9ca3af; font-size:12px; padding:8px;")
-        return ui.div(*[
-            ui.div(f"{r.get('gap_id','')} - {r.get('reason','')}",
-                style="font-size:12px; padding:4px 8px; border-bottom:1px solid #f3f4f6;")
-            for r in rules
-        ])
+            return ui.div(
+                "No suppression rules.", style="color:#9ca3af; font-size:12px; padding:8px;"
+            )
+        return ui.div(
+            *[
+                ui.div(
+                    f"{r.get('gap_id', '')} - {r.get('reason', '')}",
+                    style="font-size:12px; padding:4px 8px; border-bottom:1px solid #f3f4f6;",
+                )
+                for r in rules
+            ]
+        )
 
     # ── Star Rating Forecast Cache (Google Sheets) ───
     _cache_push_val = reactive.Value(None)
@@ -547,8 +589,14 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         input.btn_cache_forecast()
         latest = fetch_latest_forecast(star_cache_db)
         if latest is None:
-            return ui.div("📭 No forecasts cached yet — run your first forecast below.", class_="cache-banner-empty")
-        return ui.div(f"✅ FRESH — {latest.get('plan_name', '')} ({latest.get('contract_id', '')}) — {latest.get('timestamp', '')}", class_="cache-banner-fresh")
+            return ui.div(
+                "📭 No forecasts cached yet — run your first forecast below.",
+                class_="cache-banner-empty",
+            )
+        return ui.div(
+            f"✅ FRESH — {latest.get('plan_name', '')} ({latest.get('contract_id', '')}) — {latest.get('timestamp', '')}",
+            class_="cache-banner-fresh",
+        )
 
     @output
     @render.ui
@@ -572,16 +620,28 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         else:
             delta_html = ui.span("→ No Change", class_="forecast-delta-neu")
         return ui.div(
-            ui.div(ui.div("Current Rating", class_="forecast-hero-label"),
-                  ui.div(f"{current:.1f}★", class_="forecast-hero-value", style="color:#94a3b8;"),
-                  ui.div(star_label(current)[2], class_="forecast-hero-sub")),
-            ui.div(ui.div("Projected Rating", class_="forecast-hero-label"),
-                  ui.div(f"{projected:.1f}★", class_="forecast-hero-value", style=f"color:{proj_color};"),
-                  ui.div(proj_label, class_="forecast-hero-sub")),
-            ui.div(ui.div("Star Delta", class_="forecast-hero-label"), delta_html,
-                  ui.div(ui.span(latest.get("confidence_level", ""), class_=f"conf-{conf}"),
-                        class_="forecast-hero-sub", style="margin-top:6px;")),
-            class_="forecast-hero"
+            ui.div(
+                ui.div("Current Rating", class_="forecast-hero-label"),
+                ui.div(f"{current:.1f}★", class_="forecast-hero-value", style="color:#94a3b8;"),
+                ui.div(star_label(current)[2], class_="forecast-hero-sub"),
+            ),
+            ui.div(
+                ui.div("Projected Rating", class_="forecast-hero-label"),
+                ui.div(
+                    f"{projected:.1f}★", class_="forecast-hero-value", style=f"color:{proj_color};"
+                ),
+                ui.div(proj_label, class_="forecast-hero-sub"),
+            ),
+            ui.div(
+                ui.div("Star Delta", class_="forecast-hero-label"),
+                delta_html,
+                ui.div(
+                    ui.span(latest.get("confidence_level", ""), class_=f"conf-{conf}"),
+                    class_="forecast-hero-sub",
+                    style="margin-top:6px;",
+                ),
+            ),
+            class_="forecast-hero",
         )
 
     @output
@@ -597,12 +657,36 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         delta_class = "star-kpi-delta-pos" if s.get("avg_delta", 0) >= 0 else "star-kpi-delta-neg"
         delta_prefix = "+" if s.get("avg_delta", 0) >= 0 else ""
         return ui.div(
-            ui.div(ui.div(str(s.get("total", 0)), class_="star-kpi-value"), ui.div("Total Cached", class_="star-kpi-label"), class_="star-kpi-card"),
-            ui.div(ui.div(str(s.get("fresh", 0)), class_="star-kpi-value"), ui.div("Fresh", class_="star-kpi-label"), class_="star-kpi-card"),
-            ui.div(ui.div(f"{s.get('avg_projected', 0):.2f}★", class_="star-kpi-value"), ui.div("Avg Projected", class_="star-kpi-label"), class_="star-kpi-card"),
-            ui.div(ui.div(f"{delta_prefix}{s.get('avg_delta', 0):.2f}", class_="star-kpi-value"), ui.div("Avg Star Δ", class_="star-kpi-label"), class_=f"star-kpi-card {delta_class}"),
-            ui.div(ui.div(str(s.get("last_run", "—"))[:10], class_="star-kpi-value", style="font-size:14px;"), ui.div("Last Run", class_="star-kpi-label"), class_="star-kpi-card"),
-            class_="star-kpi-row"
+            ui.div(
+                ui.div(str(s.get("total", 0)), class_="star-kpi-value"),
+                ui.div("Total Cached", class_="star-kpi-label"),
+                class_="star-kpi-card",
+            ),
+            ui.div(
+                ui.div(str(s.get("fresh", 0)), class_="star-kpi-value"),
+                ui.div("Fresh", class_="star-kpi-label"),
+                class_="star-kpi-card",
+            ),
+            ui.div(
+                ui.div(f"{s.get('avg_projected', 0):.2f}★", class_="star-kpi-value"),
+                ui.div("Avg Projected", class_="star-kpi-label"),
+                class_="star-kpi-card",
+            ),
+            ui.div(
+                ui.div(f"{delta_prefix}{s.get('avg_delta', 0):.2f}", class_="star-kpi-value"),
+                ui.div("Avg Star Δ", class_="star-kpi-label"),
+                class_=f"star-kpi-card {delta_class}",
+            ),
+            ui.div(
+                ui.div(
+                    str(s.get("last_run", "—"))[:10],
+                    class_="star-kpi-value",
+                    style="font-size:14px;",
+                ),
+                ui.div("Last Run", class_="star-kpi-label"),
+                class_="star-kpi-card",
+            ),
+            class_="star-kpi-row",
         )
 
     @reactive.effect
@@ -625,7 +709,7 @@ Write a practical, actionable recommendation for closing this gap. Return only t
             "roi_projection": input.fcst_roi() or 0,
             "confidence_level": input.fcst_confidence() or "MEDIUM",
             "claude_narrative": input.fcst_narrative() or "",
-            "cached_by": "StarGuard AI — Robert Reichert"
+            "cached_by": "StarGuard AI — Robert Reichert",
         }
         _cache_push_val.set(cache_forecast(star_cache_db, forecast))
 
@@ -638,8 +722,11 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         if r is None:
             return ui.div()
         if r.get("success"):
-            delta_str = f"+{r['star_delta']}" if r['star_delta'] >= 0 else str(r['star_delta'])
-            return ui.div(f"✅ {r.get('forecast_id', '')} cached — Star Δ {delta_str} — {r.get('timestamp', '')}", class_="cache-push-success")
+            delta_str = f"+{r['star_delta']}" if r["star_delta"] >= 0 else str(r["star_delta"])
+            return ui.div(
+                f"✅ {r.get('forecast_id', '')} cached — Star Δ {delta_str} — {r.get('timestamp', '')}",
+                class_="cache-push-success",
+            )
         return ui.div(f"❌ {r.get('error', '')}", class_="cache-push-error")
 
     @output
@@ -650,8 +737,11 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         input.btn_load_history()
         input.btn_cache_forecast()
         return render.DataGrid(
-            fetch_forecast_history(star_cache_db, contract_id=input.fcst_filter_contract() or "", n=12),
-            width="100%", height="300px"
+            fetch_forecast_history(
+                star_cache_db, contract_id=input.fcst_filter_contract() or "", n=12
+            ),
+            width="100%",
+            height="300px",
         )
 
     hedis_analyzer_server(input, output, session, get_current_page=get_page)
@@ -674,15 +764,11 @@ Write a practical, actionable recommendation for closing this gap. Return only t
             return ui.div(hedis_analyzer_ui(), id="hedis-analyzer-page")
         elif page == "hedisgaps":
             return ui.div(
-                suppression_banner(app_type="gap"),
-                hedis_gap_panel(),
-                id="hedis-gaps-cloud-page"
+                suppression_banner(app_type="gap"), hedis_gap_panel(), id="hedis-gaps-cloud-page"
             )
         elif page == "adminview":
             return ui.div(
-                hitl_admin_panel(app_type="gap"),
-                style="padding: 20px;",
-                id="admin-view-page"
+                hitl_admin_panel(app_type="gap"), style="padding: 20px;", id="admin-view-page"
             )
         elif page == "starcache":
             return ui.div(star_rating_cache_panel(), id="star-cache-page")
@@ -712,7 +798,7 @@ Write a practical, actionable recommendation for closing this gap. Return only t
                     title="About StarGuard AI",
                 ),
                 style="width: 100%;",
-                id="about-page"
+                id="about-page",
             )
         elif page == "services":
             return ui.div(
@@ -724,7 +810,7 @@ Write a practical, actionable recommendation for closing this gap. Return only t
                     title="Services & Market Insights",
                 ),
                 style="width: 100%;",
-                id="services-page"
+                id="services-page",
             )
         return ui.div(executive_dashboard_ui(), id="dashboard-page")
 
