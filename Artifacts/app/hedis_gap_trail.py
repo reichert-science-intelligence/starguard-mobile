@@ -3,6 +3,7 @@
 # HEDIS Gap Refresh — Google Sheets + Supabase Parallel Write
 # StarGuard Desktop + Mobile | reichert-science-intelligence
 # Phase 1: Writes to both backends when SUPABASE_URL/KEY set
+# Phase 2: Active suppression — no stubs
 # Brand: Purple #4A3E8F | Gold #D4AF37 | Green #10b981
 # ─────────────────────────────────────────────────────────────
 
@@ -11,6 +12,7 @@ import json
 import gspread
 import pandas as pd
 from datetime import datetime, timezone, timedelta
+from typing import Optional
 from google.oauth2.service_account import Credentials
 
 try:
@@ -214,6 +216,78 @@ def _push_gap_to_supabase(row: list) -> None:
         pass  # non-blocking; Sheets is source of truth
 
 
+# ─────────────────────────────────────────────────────────────
+# PHASE 2: SUPPRESSION (Active — no stubs)
+# ─────────────────────────────────────────────────────────────
+
+_SUPPRESSION_FILE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    os.environ.get("GAP_SUPPRESSION_FILE", ".gap_suppressions.json")
+)
+_GAP_SUPPRESSIONS_CACHE: Optional[list] = None
+
+
+def _load_gap_suppressions() -> list:
+    """Load suppression rules from JSON file."""
+    global _GAP_SUPPRESSIONS_CACHE
+    if os.path.exists(_SUPPRESSION_FILE):
+        try:
+            with open(_SUPPRESSION_FILE, "r", encoding="utf-8") as f:
+                _GAP_SUPPRESSIONS_CACHE = json.load(f)
+        except Exception:
+            _GAP_SUPPRESSIONS_CACHE = []
+    else:
+        _GAP_SUPPRESSIONS_CACHE = []
+    return _GAP_SUPPRESSIONS_CACHE
+
+
+def _save_gap_suppressions(rules: list) -> None:
+    """Persist suppression rules to JSON."""
+    global _GAP_SUPPRESSIONS_CACHE
+    _GAP_SUPPRESSIONS_CACHE = rules
+    try:
+        with open(_SUPPRESSION_FILE, "w", encoding="utf-8") as f:
+            json.dump(rules, f, indent=2)
+    except Exception:
+        pass
+
+
+def get_gap_suppressions() -> list:
+    """Return all active gap suppression rules."""
+    return list(_load_gap_suppressions())
+
+
+def add_gap_suppression(gap_id: str, reason: str = "") -> dict:
+    """Add a suppression rule for a gap. Returns {success, error}."""
+    rules = _load_gap_suppressions()
+    if any(r.get("gap_id") == gap_id for r in rules):
+        return {"success": False, "error": "Already suppressed"}
+    rules.append({
+        "gap_id": gap_id,
+        "reason": reason or "Manual suppression",
+        "created": datetime.now(timezone(timedelta(hours=-5))).isoformat()
+    })
+    _save_gap_suppressions(rules)
+    return {"success": True, "gap_id": gap_id}
+
+
+def remove_gap_suppression(gap_id: str) -> dict:
+    """Remove suppression for a gap. Returns {success, error}."""
+    rules = [r for r in _load_gap_suppressions() if r.get("gap_id") != gap_id]
+    _save_gap_suppressions(rules)
+    return {"success": True, "gap_id": gap_id}
+
+
+def apply_gap_suppression_filter(df: pd.DataFrame) -> pd.DataFrame:
+    """Filter out suppressed gaps from DataFrame. Uses 'gap_id' column."""
+    if df.empty or "gap_id" not in df.columns:
+        return df
+    suppressed_ids = {r["gap_id"] for r in get_gap_suppressions()}
+    if not suppressed_ids:
+        return df
+    return df[~df["gap_id"].isin(suppressed_ids)].reset_index(drop=True)
+
+
 def fetch_hedis_gaps(
     db: HedisGapDB,
     n: int = 15,
@@ -247,7 +321,10 @@ def fetch_hedis_gaps(
             "roi_estimate", "intervention_type"
         ]
         available = [c for c in display_cols if c in df.columns]
-        return df[available].reset_index(drop=True)
+        out = df[available].reset_index(drop=True)
+        # Phase 2: apply suppression filter
+        out = apply_gap_suppression_filter(out)
+        return out
 
     except Exception as e:
         return pd.DataFrame({"Error": [str(e)]})

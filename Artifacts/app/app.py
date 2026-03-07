@@ -8,8 +8,10 @@ import pandas as pd
 from shiny import App, ui, render, reactive
 from utils.theme_config import get_theme, get_mobile_css, get_mobile_meta
 from cloud_status_badge import cloud_status_css, starguard_mobile_badge, provenance_footer
-from hedis_gap_trail import HedisGapDB, push_hedis_gap, fetch_hedis_gaps, fetch_gap_summary, close_hedis_gap
+from hedis_gap_trail import HedisGapDB, push_hedis_gap, fetch_hedis_gaps, fetch_gap_summary, close_hedis_gap, get_gap_suppressions, add_gap_suppression, remove_gap_suppression
 from hedis_gap_ui import hedis_gap_panel
+from hitl_admin_view import hitl_admin_panel
+from suppression_banner import suppression_banner
 from star_rating_cache import (
     StarRatingCacheDB, cache_forecast,
     fetch_latest_forecast, fetch_forecast_history,
@@ -107,6 +109,12 @@ def navigation_bar():
                     onclick="navigateTo('hedisgaps')"
                 ),
                 ui.div(
+                    "Admin View",
+                    class_="sidebar-nav-item",
+                    id="nav-adminview",
+                    onclick="navigateTo('adminview')"
+                ),
+                ui.div(
                     "📊 Member Risk Stratification",
                     class_="sidebar-nav-item",
                     id="nav-risk",
@@ -186,6 +194,7 @@ def navigation_bar():
                     "starcache": "⭐ Star Cache",
                     "hedis": "📊 HEDIS Gap Analyzer",
                     "hedisgaps": "📊 HEDIS Gaps (Cloud)",
+                    "adminview": "Admin View",
                     "risk": "📊 Risk Strat",
                     "roi": "💰 ROI Portfolio",
                     "workflow": "📋 Workflow",
@@ -449,6 +458,73 @@ Write a practical, actionable recommendation for closing this gap. Return only t
             return ui.div(f"✅ {r.get('gap_id', '')} → CLOSED", class_="gap-push-success")
         return ui.div(f"❌ {r.get('error', '')}", class_="gap-push-error")
 
+    # ── HITL Admin - Gap Suppressions (Phase 2) ───
+    _hitl_gap_add_result = reactive.Value(None)
+    _hitl_gap_remove_result = reactive.Value(None)
+
+    @reactive.effect
+    @reactive.event(input.btn_add_gap_suppression)
+    def _handle_add_gap_suppression():
+        if input.page_nav() != "adminview":
+            return
+        gid = (input.hitl_gap_id() or "").strip()
+        reason = (input.hitl_gap_reason() or "Manual").strip()
+        if not gid:
+            return
+        result = add_gap_suppression(gid, reason)
+        _hitl_gap_add_result.set(result)
+
+    @reactive.effect
+    @reactive.event(input.btn_remove_gap_suppression)
+    def _handle_remove_gap_suppression():
+        if input.page_nav() != "adminview":
+            return
+        gid = (input.hitl_gap_remove_id() or "").strip()
+        if not gid:
+            return
+        result = remove_gap_suppression(gid)
+        _hitl_gap_remove_result.set(result)
+
+    @output
+    @render.ui
+    def hitl_gap_add_result():
+        if input.page_nav() != "adminview":
+            return ui.div()
+        r = _hitl_gap_add_result()
+        if r is None:
+            return ui.div()
+        if r.get("success"):
+            return ui.div("[OK] Added suppression", style="color:#166534; font-size:12px; margin-top:6px;")
+        return ui.div(f"[!] {r.get('error','Failed')}", style="color:#991b1b; font-size:12px; margin-top:6px;")
+
+    @output
+    @render.ui
+    def hitl_gap_remove_result():
+        if input.page_nav() != "adminview":
+            return ui.div()
+        r = _hitl_gap_remove_result()
+        if r is None:
+            return ui.div()
+        if r.get("success"):
+            return ui.div("[OK] Removed suppression", style="color:#166534; font-size:12px; margin-top:6px;")
+        return ui.div(f"[!] {r.get('error','Failed')}", style="color:#991b1b; font-size:12px; margin-top:6px;")
+
+    @output
+    @render.ui
+    def hitl_gap_rules_list():
+        _hitl_gap_remove_result()
+        if input.page_nav() != "adminview":
+            return ui.div()
+        input.btn_refresh_hitl_gap()
+        rules = get_gap_suppressions()
+        if not rules:
+            return ui.div("No suppression rules.", style="color:#9ca3af; font-size:12px; padding:8px;")
+        return ui.div(*[
+            ui.div(f"{r.get('gap_id','')} - {r.get('reason','')}",
+                style="font-size:12px; padding:4px 8px; border-bottom:1px solid #f3f4f6;")
+            for r in rules
+        ])
+
     # ── Star Rating Forecast Cache (Google Sheets) ───
     _cache_push_val = reactive.Value(None)
 
@@ -597,7 +673,17 @@ Write a practical, actionable recommendation for closing this gap. Return only t
         elif page == "hedis":
             return ui.div(hedis_analyzer_ui(), id="hedis-analyzer-page")
         elif page == "hedisgaps":
-            return ui.div(hedis_gap_panel(), id="hedis-gaps-cloud-page")
+            return ui.div(
+                suppression_banner(app_type="gap"),
+                hedis_gap_panel(),
+                id="hedis-gaps-cloud-page"
+            )
+        elif page == "adminview":
+            return ui.div(
+                hitl_admin_panel(app_type="gap"),
+                style="padding: 20px;",
+                id="admin-view-page"
+            )
         elif page == "starcache":
             return ui.div(star_rating_cache_panel(), id="star-cache-page")
         elif page == "ai":

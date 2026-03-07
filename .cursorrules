@@ -1,0 +1,18 @@
+# Engineering Hardening Standards — reichert-science-intelligence
+
+After every feature phase ships, run the Hardening Sprint before starting the next phase.
+
+ALWAYS:
+- Use pyproject.toml, not requirements.txt alone
+- Add type hints to all public functions
+- Separate business logic from Shiny reactive logic
+- Write minimum 3 unit tests per new module
+- Keep ARCHITECTURE.md current
+
+NEVER:
+- Embed structural refactoring inside a feature sprint
+- Merge Supabase schema changes without updating ARCHITECTURE.md
+- Ship a new module without at least one unit test
+- Use relative import hacks — fix the package structure instead
+
+Reference: Phase2-to-Hardening-Sprint-Checklist.md in repo root
