@@ -5,6 +5,7 @@
 # Brand: Purple #4A3E8F | Gold #D4AF37
 # ─────────────────────────────────────────────────────────────
 
+from htmltools import Tag
 from shiny import ui
 from hedis_gap_trail import (
     get_gap_suppressions,
@@ -13,14 +14,14 @@ from hedis_gap_trail import (
 )
 
 
-def hitl_admin_css() -> ui.tags.style:
+def hitl_admin_css() -> Tag:
     return ui.tags.style("""
         .hitl-admin { padding: 20px; }
         .hitl-rule-row { margin-bottom: 10px; padding: 10px; background: #1a1240; border-radius: 6px; }
     """)
 
 
-def hitl_admin_panel(app_type: str = "gap") -> ui.div:
+def hitl_admin_panel(app_type: str = "gap") -> Tag:
     """HITL Admin View panel for StarGuard Mobile (gap suppressions only)."""
     return ui.div(
         hitl_admin_css(),

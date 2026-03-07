@@ -4,11 +4,12 @@
 # Color: Amber when suppressions exist, Green when none
 # ─────────────────────────────────────────────────────────────
 
+from htmltools import Tag
 from shiny import ui
 from hedis_gap_trail import get_gap_suppressions
 
 
-def suppression_banner_base_css() -> ui.tags.style:
+def suppression_banner_base_css() -> Tag:
     return ui.tags.style("""
         .suppression-banner {
             border-radius: 8px;
@@ -29,7 +30,7 @@ def suppression_banner_base_css() -> ui.tags.style:
     """)
 
 
-def suppression_banner(app_type: str = "gap") -> ui.div:
+def suppression_banner(app_type: str = "gap") -> Tag:
     """
     Banner showing gap suppression status.
     Amber when suppressions exist, Green when none.
