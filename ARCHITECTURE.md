@@ -2,7 +2,7 @@
 
 ## Purpose
 
-StarGuard Mobile is the mobile-optimized edition of the StarGuard Medicare Advantage Intelligence Platform. Purpose-built for clinical operations staff and field-based quality coordinators, it delivers HEDIS gap analysis, HCC risk stratification, Star Rating forecasting, and AI-powered insights in a responsive, touch-optimized interface. Phase 2 adds gap suppression, suppression banner, HITL Admin View, and hardening artifacts.
+StarGuard Mobile is the mobile-optimized edition of the StarGuard Medicare Advantage Intelligence Platform. Purpose-built for clinical operations staff and field-based quality coordinators, it delivers HEDIS gap analysis, HCC risk stratification, Star Rating forecasting, and AI-powered insights in a responsive, touch-optimized interface. Primary use case: point-of-care gap alerts, real-time member targeting, and AI insights in the field. Phase 2 adds gap suppression, suppression banner, HITL Admin View, and hardening artifacts.
 
 ---
 
@@ -13,15 +13,15 @@ StarGuard Mobile is the mobile-optimized edition of the StarGuard Medicare Advan
 │                      StarGuard Mobile (Shiny App)                            │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Artifacts/app/app.py (main)                                                 │
-│    ├── hedis_gap_trail.py ──────► Google Sheets + Supabase                   │
-│    │   └── .gap_suppressions.json (Phase 2)                                 │
+│    ├── hedis_gap_trail.py ──────► Google Sheets + Supabase                  │
+│    │   └── .gap_suppressions.json (Phase 2)                                  │
 │    ├── hedis_gap_ui.py                                                       │
 │    ├── cloud_status_badge.py                                                 │
-│    ├── suppression_banner.py (Phase 2)                                        │
-│    ├── hitl_admin_view.py (Phase 2)                                           │
+│    ├── suppression_banner.py (Phase 2)                                       │
+│    ├── hitl_admin_view.py (Phase 2)                                          │
 │    ├── star_rating_cache.py, star_rating_cache_ui.py                         │
-│    ├── intervention_optimizer.py                                              │
-│    ├── pages/ (star_predictor, hedis_analyzer, ai_validation, etc.)         │
+│    ├── intervention_optimizer.py                                             │
+│    ├── pages/ (star_predictor, hedis_analyzer, ai_validation, etc.)          │
 │    └── utils/theme_config.py                                                 │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -41,8 +41,8 @@ StarGuard Mobile is the mobile-optimized edition of the StarGuard Medicare Advan
 | `star_rating_cache.py` | Star rating forecast cache |
 | `star_rating_cache_ui.py` | Star cache panel UI |
 | `intervention_optimizer.py` | Intervention optimizer |
-| `pages/` | Executive dashboard, star predictor, HEDIS analyzer, etc. |
-| `utils/theme_config.py` | Mobile theme, CSS, meta |
+| `pages/` | Executive dashboard, star predictor, HEDIS analyzer, ai_validation, etc. |
+| `utils/theme_config.py` | Mobile theme, CSS, meta, iOS Safari overrides |
 
 ---
 
@@ -58,6 +58,16 @@ User → Hamburger Nav → Shiny UI → Server Handlers
          ├──► navigateTo() → Shiny.setInputValue('page_nav', page, {priority:'event'})
          └──► star_rating_cache, pages → forecasts, analytics
 ```
+
+---
+
+## Supabase Schema
+
+| Table | Purpose |
+|------|---------|
+| `hedis_gap_trail` | Parallel write from hedis_gap_trail.py; mirrors Google Sheets HEDIS gap records |
+
+Primary persistence: Google Sheets. Supabase used for parallel write when `SUPABASE_URL` and `SUPABASE_ANON_KEY` are set. Same schema as StarGuard Desktop — shared tables.
 
 ---
 
@@ -101,12 +111,22 @@ Artifacts.app.app
 
 ---
 
+## Supabase Schema
+
+| Table | Purpose |
+|-------|---------|
+| `hedis_gap_trail` | Parallel write from hedis_gap_trail.py (HEDIS gap records) |
+
+Google Sheets is source of truth; Supabase receives fire-and-forget parallel writes when `SUPABASE_URL` and `SUPABASE_ANON_KEY` are set. Shared schema with StarGuard Desktop.
+
+---
+
 ## Phase 2 Hardening Checklist
 
 - [x] pyproject.toml (build, ruff, mypy, pytest)
 - [x] Type hints (hedis_gap_trail, cloud_status_badge, suppression_banner, hitl_admin_view)
-- [x] Unit tests (tests/test_starguard_mobile.py)
-- [x] CI workflow (.github/workflows/ci.yml)
+- [x] Unit tests (tests/test_starguard_mobile.py) — 19 tests — 19 tests
+- [x] CI workflow (.github/workflows/ci.yml) — strict mode
 - [x] ARCHITECTURE.md
 
 ---
