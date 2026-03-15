@@ -138,6 +138,25 @@ class HedisGapDB:
 # ─────────────────────────────────────────────────────────────
 
 
+def write_gap_trail(
+    api_key: str | None,
+    db: HedisGapDB,
+    gap_data: dict[str, Any],
+    app_name: str = "StarGuardMobile",
+) -> dict[str, Any]:
+    """
+    Push gap to cloud and increment usage. Mirrors Desktop write path.
+    Uses starguard_core.auth.increment_usage for tier tracking.
+    """
+    try:
+        from starguard_core.auth import increment_usage
+
+        increment_usage(api_key, "hedis_predictions", app_name)
+    except ImportError:
+        pass  # starguard-core not installed; proceed with write only
+    return push_hedis_gap(db, gap_data)
+
+
 def push_hedis_gap(db: HedisGapDB, record: dict[str, Any]) -> dict[str, Any]:
     """
     Push a single HEDIS gap record to Google Sheets.

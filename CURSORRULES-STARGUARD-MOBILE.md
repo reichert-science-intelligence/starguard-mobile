@@ -1,3 +1,10 @@
+# CURSORRULES — StarGuard Mobile
+
+Source for `.cursorrules` install into `starguard-mobile` repo.  
+Demo: rreichert-starguardai.hf.space
+
+## Rules
+
 # Engineering Hardening Standards — reichert-science-intelligence
 
 ---

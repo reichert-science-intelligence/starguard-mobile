@@ -6,6 +6,16 @@ Main application entry point with hamburger menu sidebar navigation
 from pathlib import Path
 
 import pandas as pd
+
+from starguard_core.auth import (
+    UPGRADE_URL,
+    capture_lead,
+    increment_usage,
+    is_feature_enabled,
+    validate_api_key,
+)
+
+APP_NAME = "StarGuardMobile"
 from hedis_gap_ui import hedis_gap_panel
 from shiny import App, reactive, render, ui
 from star_rating_cache import (
@@ -29,6 +39,7 @@ from hedis_gap_trail import (
     get_gap_suppressions,
     push_hedis_gap,
     remove_gap_suppression,
+    write_gap_trail,
 )
 from hitl_admin_view import hitl_admin_panel
 from pages.ai_validation import ai_validation_server, ai_validation_ui
@@ -420,6 +431,12 @@ Write a practical, actionable recommendation for closing this gap. Return only t
     def _push_gap():
         if input.page_nav() != "hedisgaps":
             return
+        api_key = None
+        if hasattr(session, "request") and session.request:
+            api_key = (
+                session.request.headers.get("X-API-Key")
+                or session.request.query_params.get("api_key")
+            )
         record = {
             "member_id": input.gap_member_id() or "",
             "member_name": input.gap_member_name() or "",
@@ -432,7 +449,7 @@ Write a practical, actionable recommendation for closing this gap. Return only t
             "roi_estimate": input.gap_roi() or 0,
             "claude_recommendation": input.gap_claude_rec() or "",
         }
-        _gap_push_result.set(push_hedis_gap(hedis_db, record))
+        _gap_push_result.set(write_gap_trail(api_key, hedis_db, record, APP_NAME))
 
     @output
     @render.ui

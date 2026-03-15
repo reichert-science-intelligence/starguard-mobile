@@ -5,6 +5,7 @@ description = "StarGuard Mobile — Medicare Advantage Intelligence Platform (Mo
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "starguard-core>=1.0.0",
     "shiny>=0.10.2",
     "shinyswatch>=0.7.0",
     "plotly>=5.18.0",
