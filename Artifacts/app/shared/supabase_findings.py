@@ -20,17 +20,21 @@ platform_hub_kpis VIEW filters:
     remediated_total       status       = 'remediated'
 
 Silent-fail design: all errors logged to stderr only.
-Never raises — Supabase insert failures must never crash the UI.
+Never raises — insert failures must never crash the UI.
 
-Credential resolution order (read from os.environ on each insert, not at import):
-    1. PLATFORM_SUPABASE_URL  / PLATFORM_SUPABASE_ANON_KEY  (Platform Hub project)
-    2. SUPABASE_URL           / SUPABASE_ANON_KEY            (Sovereign primary project)
+Connection (read from os.environ on each insert, not at import):
+    Uses psycopg2 with a Postgres connection string (``postgresql://`` or ``postgres://``).
+    Hugging Face Spaces may block HTTP/HTTPS to ``*.supabase.co`` (REST and supabase-py);
+    direct Postgres (port 5432 / pooler) uses the DSN from the Supabase dashboard.
 
-Rationale: Hugging Face and other hosts may expose secrets after the worker imports
-this module; import-time caching would leave URL/key permanently empty.
+    Resolution order:
+        1. PLATFORM_DATABASE_URL
+        2. DATABASE_URL
+        3. SUPABASE_DB_URL
 
-Transport: official ``supabase`` Python client instead of raw httpx REST calls.
-Some runtimes fail to resolve ``*.supabase.co`` via httpx even when the client works.
+    Values that start with ``http://`` or ``https://`` are ignored (those are REST API bases,
+    not TCP DSNs). Set a dedicated secret, e.g. ``DATABASE_URL``, to the **Session pooler** or
+    **Direct connection** string from Supabase → Project Settings → Database.
 """
 from __future__ import annotations
 
@@ -39,27 +43,23 @@ import sys
 from datetime import datetime, timezone
 from typing import Any
 
-from supabase import create_client
+import psycopg2
+from psycopg2.extras import Json
 
 _TABLE = "cross_app_findings"
 
 
-def _get_supabase_url() -> str:
-    return (
-        os.environ.get("PLATFORM_SUPABASE_URL")
-        or os.environ.get("SUPABASE_URL")
-        or ""
-    ).strip()
-
-
-def _get_supabase_key() -> str:
-    return (
-        os.environ.get("PLATFORM_SUPABASE_ANON_KEY")
-        or os.environ.get("SUPABASE_ANON_KEY")
-        or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
-        or os.environ.get("SUPABASE_KEY")
-        or ""
-    ).strip()
+def _get_postgres_dsn() -> str:
+    for name in ("PLATFORM_DATABASE_URL", "DATABASE_URL", "SUPABASE_DB_URL"):
+        v = (os.environ.get(name) or "").strip()
+        if not v:
+            continue
+        low = v.lower()
+        if low.startswith("http://") or low.startswith("https://"):
+            continue
+        if low.startswith("postgresql://") or low.startswith("postgres://"):
+            return v
+    return ""
 
 
 def insert_finding(
@@ -88,40 +88,54 @@ def insert_finding(
         trigger_type:   "action" | "session_end"
         session_id:     client session uuid
         extra_metadata: any additional key/value pairs stored in metadata jsonb
-        measure_id:     optional top-level column when present in table
-        policy_id:      optional top-level column when present in table
+        measure_id:     folded into metadata if table has no top-level column
+        policy_id:      folded into metadata if table has no top-level column
     """
-    url = _get_supabase_url()
-    key = _get_supabase_key()
-    if not url or not key:
-        print("[findings] URL or key missing — skipping insert", file=sys.stderr)
+    dsn = _get_postgres_dsn()
+    if not dsn:
+        print(
+            "[findings] No postgres DSN (PLATFORM_DATABASE_URL / DATABASE_URL / SUPABASE_DB_URL) "
+            "— skipping insert (http(s):// URLs are ignored)",
+            file=sys.stderr,
+        )
         return False
 
-    now = datetime.now(timezone.utc).isoformat()
-
-    payload = {
-        "source_app": source_app,
-        "finding_type": finding_type,
-        "severity": severity,
-        "status": status,
-        "title": title,
-        "description": description,
-        "metadata": {
-            "trigger_type": trigger_type,
-            "client_session_id": session_id,
-            **(extra_metadata or {}),
-        },
-        "created_at": now,
-        "updated_at": now,
+    now = datetime.now(timezone.utc)
+    meta: dict[str, Any] = {
+        "trigger_type": trigger_type,
+        "client_session_id": session_id,
+        **(extra_metadata or {}),
     }
     if measure_id is not None:
-        payload["measure_id"] = str(measure_id)
+        meta["measure_id"] = str(measure_id)
     if policy_id is not None:
-        payload["policy_id"] = str(policy_id)
+        meta["policy_id"] = str(policy_id)
+
+    sql = (
+        f"INSERT INTO {_TABLE} "
+        "(source_app, finding_type, severity, status, title, description, metadata, created_at, updated_at) "
+        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    )
+    args = (
+        source_app,
+        finding_type,
+        severity,
+        status,
+        title,
+        description,
+        Json(meta),
+        now,
+        now,
+    )
 
     try:
-        client = create_client(url, key)
-        client.table(_TABLE).insert(payload).execute()
+        conn = psycopg2.connect(dsn, connect_timeout=10)
+        try:
+            with conn.cursor() as cur:
+                cur.execute(sql, args)
+            conn.commit()
+        finally:
+            conn.close()
         return True
     except Exception as exc:
         print(
