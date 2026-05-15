@@ -55,11 +55,15 @@ def suppression_banner(app_type: str = "gap") -> Tag:
             ui.span(msg, class_="suppression-banner-text"),
             style=f"display: flex; align-items: center; gap: 8px; color: {text_color};",
         ),
-        ui.a(
+        ui.tags.button(
             "Manage in Admin View ->",
-            href="#",
-            style=f"color: {text_color}; font-size: 12px; text-decoration: none;",
+            type="button",
             id="suppression_manage_link",
+            style=(
+                f"color: {text_color}; font-size: 12px; text-decoration: none; "
+                "background: none; border: none; padding: 0; margin: 0; "
+                "cursor: pointer; font: inherit; text-align: inherit;"
+            ),
         ),
         class_="suppression-banner",
         style=f"background: {bg}; border: 1px solid {border};",
