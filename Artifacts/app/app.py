@@ -90,12 +90,14 @@ def navigation_bar():
             ),
             class_="navbar",
         ),
-        # Hamburger menu button (mobile only)
-        ui.div(
+        # Hamburger menu button (mobile only) — real <button> avoids dead taps vs div+onclick
+        ui.tags.button(
             ui.div(ui.tags.span(), ui.tags.span(), ui.tags.span(), class_="hamburger-icon"),
             id="menu-toggle",
+            type="button",
             class_="menu-toggle",
-            onclick="toggleSidebar()",
+            onclick="toggleSidebar(); return false;",
+            aria_label="Open navigation menu",
         ),
         # Sidebar overlay (darkens background when open)
         ui.div(id="sidebar-overlay", class_="sidebar-overlay", onclick="toggleSidebar()"),
@@ -241,6 +243,7 @@ def navigation_bar():
                 const sidebar = document.getElementById('nav-sidebar');
                 const overlay = document.getElementById('sidebar-overlay');
                 const toggle = document.getElementById('menu-toggle');
+                if (!sidebar || !overlay || !toggle) return;
 
                 sidebar.classList.toggle('active');
                 overlay.classList.toggle('active');
@@ -313,6 +316,24 @@ app_ui = ui.page_fluid(
                         try { Shiny.setInputValue('gap_claude_rec', v); } catch(e) {}
                     });
                 }
+            })();
+        """),
+        ui.tags.script("""
+            (function(){
+                if (typeof jQuery === 'undefined') return;
+                // Mitigate scroll-to-top after reactive updates (Shiny busy cycle).
+                jQuery(document).on('shiny:busy', function() {
+                    window.__sgScrollBeforeReactive = window.scrollY || document.documentElement.scrollTop || 0;
+                });
+                jQuery(document).on('shiny:idle', function() {
+                    requestAnimationFrame(function() {
+                        var saved = window.__sgScrollBeforeReactive;
+                        var now = window.scrollY || document.documentElement.scrollTop || 0;
+                        if (typeof saved === 'number' && saved > 120 && now < 80) {
+                            window.scrollTo(0, saved);
+                        }
+                    });
+                });
             })();
         """),
         ui.tags.style("""

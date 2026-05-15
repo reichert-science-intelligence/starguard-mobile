@@ -509,7 +509,7 @@ input:focus, select:focus, textarea:focus {
     position: fixed;
     top: 1rem;
     right: 1rem;
-    z-index: 2000;
+    z-index: 10050;
     background: white;
     border: 2px solid #7c3aed;
     border-radius: 8px;
@@ -521,6 +521,8 @@ input:focus, select:focus, textarea:focus {
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     transition: all 0.3s ease;
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .menu-toggle:hover {
@@ -573,12 +575,14 @@ input:focus, select:focus, textarea:focus {
     z-index: 1500;
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .sidebar-overlay.active {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 /* Sidebar */
