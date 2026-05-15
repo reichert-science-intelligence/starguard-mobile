@@ -3,9 +3,12 @@ StarGuard AI Mobile - Medicare Advantage Intelligence Platform
 Main application entry point with hamburger menu sidebar navigation
 """
 
+import logging
+import os
 from pathlib import Path
 
 import pandas as pd
+from dotenv import load_dotenv
 
 from starguard_core.auth import (
     UPGRADE_URL,
@@ -53,6 +56,15 @@ from pages.risk_stratification import risk_stratification_server, risk_stratific
 from pages.roi_portfolio_optimizer import roi_portfolio_optimizer_server, roi_portfolio_optimizer_ui
 from pages.star_predictor import star_predictor_server, star_predictor_ui
 from suppression_banner import suppression_banner
+
+load_dotenv(override=False)
+_ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
+
+log = logging.getLogger(__name__)
+log.info(
+    "ANTHROPIC_API_KEY at module load: %s",
+    "set" if _ANTHROPIC_API_KEY else "MISSING",
+)
 
 
 def navigation_bar():
@@ -400,7 +412,14 @@ def server(input, output, session):
         try:
             import anthropic
 
-            client = anthropic.Anthropic()
+            if not _ANTHROPIC_API_KEY:
+                ui.update_text_area(
+                    "gap_claude_rec",
+                    value="Error: ANTHROPIC_API_KEY not set. Add to .env or Space secrets.",
+                )
+                return
+
+            client = anthropic.Anthropic(api_key=_ANTHROPIC_API_KEY)
             member_id = input.gap_member_id() or "N/A"
             member_name = input.gap_member_name() or "N/A"
             measure_code = input.gap_measure_code() or "N/A"
