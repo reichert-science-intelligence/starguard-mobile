@@ -51,6 +51,6 @@ jobs:
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git remote add hf https://rreichert:$HF_TOKEN@huggingface.co/spaces/rreichert/starguardai || true
-          git remote set-url hf https://rreichert:$HF_TOKEN@huggingface.co/spaces/rreichert/starguardai
+          git remote add hf https://rreichert:$HF_TOKEN@huggingface.co/spaces/rreichert/starguard-mobile || true
+          git remote set-url hf https://rreichert:$HF_TOKEN@huggingface.co/spaces/rreichert/starguard-mobile
           git push hf main --force
