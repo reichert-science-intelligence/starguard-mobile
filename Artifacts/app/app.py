@@ -441,8 +441,19 @@ Write a practical, actionable recommendation for closing this gap. Return only t
             rec = resp.content[0].text.strip() if resp.content else ""
             ui.update_text_area("gap_claude_rec", value=rec)
         except Exception as e:
+            log.error("Anthropic call failed: %r", e, exc_info=True)
             err_msg = str(e)
-            if "ANTHROPIC" in err_msg.upper() or "api_key" in err_msg.lower():
+            err_lower = err_msg.lower()
+            is_auth_error = type(e).__name__ == "AuthenticationError" and (
+                type(e).__module__ or ""
+            ).startswith("anthropic")
+            if is_auth_error or (
+                "api_key" in err_lower
+                and any(
+                    phrase in err_lower
+                    for phrase in ("must be set", "not set", "required", "provide an api key")
+                )
+            ):
                 err_msg = "ANTHROPIC_API_KEY not set. Add to .env or Space secrets."
             ui.update_text_area("gap_claude_rec", value=f"Error: {err_msg}")
 
