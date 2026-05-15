@@ -60,6 +60,7 @@ from suppression_banner import suppression_banner
 load_dotenv(override=False)
 _ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 log.info(
     "ANTHROPIC_API_KEY at module load: %s",
