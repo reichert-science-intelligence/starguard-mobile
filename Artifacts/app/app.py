@@ -409,7 +409,7 @@ def server(input, output, session):
     def _generate_gap_rec():
         if input.page_nav() != "hedisgaps":
             return
-        session.send_custom_message("gap_show_loading", {})
+        ui.update_text_area("gap_claude_rec", value="⏳ Claude is generating...")
         try:
             import anthropic
 
